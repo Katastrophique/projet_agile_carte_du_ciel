@@ -32,11 +32,6 @@ Les étoiles visibles à l'œil nu (magnitude < 6) sont affichées et calculées
 - Zénith au centre, horizon sur le bord
 - Directions cardinales (N, S, E, O) autour du cercle
 
-### 🥚 Easter Eggs
-Des secrets sont cachés dans l'application... Saurez-vous les trouver ? 
-- Tapez des mots secrets au clavier...
-- Ou tentez le fameux code Konami : ↑↑↓↓←→←→BA
-- 7 clics rapides sur le titre révèlent un menu secret !
 
 ## 🚀 Démarrage rapide
 
@@ -81,7 +76,7 @@ projet_agile_carte_du_ciel/
 │
 ├── shared/                 # Ressources partagées entre les modes
 │   ├── astronomy.js        # Calculs astronomiques (LST, coordonnées)
-│   ├── easter-eggs.js      # Module des easter eggs 🥚
+│   ├── easter-eggs.js      # Module des easter eggs
 │   ├── hygdata_v40.csv     # Base de données stellaires (~110 000 étoiles)
 │   └── assets/             # Images et ressources
 │       ├── stars.png
@@ -144,31 +139,6 @@ Position d'observation (définie dans `shared/astronomy.js`) :
 - CSS3 (Flexbox, Grid, animations)
 - JavaScript ES6+ (vanilla, sans framework)
 
-## ⌨️ Raccourcis clavier
-
-| Touche | Action |
-|--------|--------|
-| `1` | Basculer vers le Mode POV |
-| `2` | Basculer vers le Mode Télescope |
-
-## 📈 Évolutions futures possibles
-
-- [ ] Sélection de date/heure personnalisée
-- [ ] Affichage des noms des étoiles principales
-- [ ] Dessin des constellations
-- [ ] Ajout des planètes
-- [ ] Choix de la position d'observation
-- [ ] Mode nuit (interface rouge)
-- [ ] Export de la vue en image
-
-## 🤝 Contribution
-
-Ce projet est réalisé dans le cadre d'un projet agile éducatif. Les contributions sont les bienvenues !
-
 ## 📄 Licence
 
 Projet éducatif - Libre d'utilisation.
-
----
-
-*Développé avec ❤️ pour l'astronomie*

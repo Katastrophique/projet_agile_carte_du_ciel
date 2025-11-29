@@ -33,11 +33,6 @@ class EasterEggs {
         // Écouter les touches
         this.initKeyListener();
         
-        // Easter egg bonus : clic secret
-        this.clickCount = 0;
-        this.clickTimer = null;
-        this.initSecretClick();
-        
         console.log('🥚 Easter eggs loaded... but you didn\'t see anything 👀');
     }
     
@@ -174,28 +169,7 @@ class EasterEggs {
         });
     }
     
-    /**
-     * Initialise le clic secret (7 clics rapides sur le titre)
-     */
-    initSecretClick() {
-        const header = document.querySelector('.overlay-header h1');
-        if (header) {
-            header.style.cursor = 'default';
-            header.addEventListener('click', () => {
-                this.clickCount++;
-                clearTimeout(this.clickTimer);
-                
-                if (this.clickCount >= 7) {
-                    this.triggerSecretMenu();
-                    this.clickCount = 0;
-                } else {
-                    this.clickTimer = setTimeout(() => {
-                        this.clickCount = 0;
-                    }, 2000);
-                }
-            });
-        }
-    }
+
     
     /**
      * Affiche un easter egg
