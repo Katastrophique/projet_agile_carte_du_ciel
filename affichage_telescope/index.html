@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte du Ciel - Lyon</title>
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête avec titre et informations -->
+        <header class="header">
+            <h1>🌟 Carte du Ciel - Lyon</h1>
+            <div class="observation-info">
+                <p><strong>Date et heure d'observation :</strong> <span id="datetime"></span></p>
+                <p><strong>Position :</strong> Lyon, France (45.7578° N, 4.8320° E)</p>
+            </div>
+        </header>
+
+        <!-- Zone principale avec le canvas -->
+        <main class="main-content">
+            <div class="canvas-container">
+                <!-- Canvas pour la carte du ciel (taille dynamique) -->
+                <canvas id="skyCanvas"></canvas>
+            </div>
+
+            <!-- Informations et contrôles -->
+            <div class="info-panel">
+                <div class="stats">
+                    <p><strong>Étoiles visibles :</strong> <span id="starCount">Chargement...</span></p>
+                    <p><strong>Zoom :</strong> <span id="zoomLevel">1.0x</span></p>
+                </div>
+                <div class="instructions">
+                    <h3>Instructions</h3>
+                    <ul>
+                        <li>🔍 <strong>Molette</strong> pour zoomer</li>
+                        <li>✋ <strong>Clic + glisser</strong> pour déplacer</li>
+                        <li>🔄 <strong>Double-clic</strong> pour réinitialiser la vue</li>
+                    </ul>
+                </div>
+                <div class="legend">
+                    <h3>Légende</h3>
+                    <p>La taille des étoiles représente leur luminosité (magnitude).</p>
+                    <p>Plus une étoile est brillante, plus elle apparaît grande.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Message de chargement / erreur -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p id="loadingMessage">Chargement des données stellaires...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../shared/astronomy.js"></script>
+    <script src="canvas-controller.js"></script>
+    <script src="app.js"></script>
+    <script src="../shared/easter-eggs.js"></script>
+</body>
+</html>

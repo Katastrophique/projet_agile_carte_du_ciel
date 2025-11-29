@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests - Carte du Ciel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid rgba(74, 144, 217, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #4a90d9;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h1 span {
+            font-size: 0.6em;
+            color: #888;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 144, 217, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .summary-card.passed {
+            border-left: 4px solid #4caf50;
+        }
+        
+        .summary-card.failed {
+            border-left: 4px solid #f44336;
+        }
+        
+        .summary-card.total {
+            border-left: 4px solid #4a90d9;
+        }
+        
+        .summary-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .summary-card.passed .number {
+            color: #4caf50;
+        }
+        
+        .summary-card.failed .number {
+            color: #f44336;
+        }
+        
+        .summary-card.total .number {
+            color: #4a90d9;
+        }
+        
+        .summary-card .label {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .test-suite {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .suite-header {
+            background: rgba(74, 144, 217, 0.2);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .suite-header:hover {
+            background: rgba(74, 144, 217, 0.3);
+        }
+        
+        .suite-header h3 {
+            color: #4a90d9;
+            font-size: 1.2em;
+        }
+        
+        .suite-stats {
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .test-list {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .test-list.expanded {
+            max-height: 2000px;
+        }
+        
+        .test-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-item.passed {
+            border-left: 3px solid #4caf50;
+        }
+        
+        .test-item.failed {
+            border-left: 3px solid #f44336;
+            background: rgba(244, 67, 54, 0.05);
+        }
+        
+        .test-icon {
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        
+        .test-name {
+            flex-grow: 1;
+        }
+        
+        .test-error {
+            color: #f44336;
+            font-size: 0.85em;
+            margin-top: 5px;
+            padding: 8px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 4px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+        }
+        
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(74, 144, 217, 0.2);
+            border-top-color: #4a90d9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .console-output {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .console-output h4 {
+            color: #4a90d9;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        .console-line {
+            padding: 3px 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .console-line.success { color: #4caf50; }
+        .console-line.error { color: #f44336; }
+        .console-line.info { color: #888; }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+        }
+        
+        footer a {
+            color: #4a90d9;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 Tests <span>Carte du Ciel</span></h1>
+            <p class="subtitle">Suite de tests unitaires et d'intégration</p>
+        </header>
+        
+        <div class="controls">
+            <button id="runAllBtn" onclick="runAllTests()">▶️ Exécuter tous les tests</button>
+            <button id="runAstronomyBtn" onclick="runSuite('astronomy')">🌟 Tests Astronomy</button>
+            <button id="runCameraBtn" onclick="runSuite('camera')">📷 Tests Camera</button>
+            <button id="runIntegrationBtn" onclick="runSuite('integration')">🔗 Tests Intégration</button>
+        </div>
+        
+        <div class="summary" id="summary" style="display: none;">
+            <div class="summary-card passed">
+                <div class="number" id="passedCount">0</div>
+                <div class="label">Réussis</div>
+            </div>
+            <div class="summary-card failed">
+                <div class="number" id="failedCount">0</div>
+                <div class="label">Échoués</div>
+            </div>
+            <div class="summary-card total">
+                <div class="number" id="totalCount">0</div>
+                <div class="label">Total</div>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Exécution des tests en cours...</p>
+        </div>
+        
+        <div id="testResults"></div>
+        
+        <div class="console-output" id="consoleOutput" style="display: none;">
+            <h4>📋 Console de sortie</h4>
+            <div id="consoleLines"></div>
+        </div>
+        
+        <footer>
+            <p>Carte du Ciel - Tests © 2024 | <a href="../index.html">Retour à l'application</a></p>
+        </footer>
+    </div>
+    
+    <!-- Charger les dépendances -->
+    <script src="../shared/astronomy.js"></script>
+    <script src="../affichage_pov/camera.js"></script>
+    
+    <!-- Charger le framework de test et les tests -->
+    <script src="test-runner.js"></script>
+    <script src="astronomy.test.js"></script>
+    <script src="camera.test.js"></script>
+    <script src="integration.test.js"></script>
+    
+    <script>
+        // Variables globales pour les résultats
+        let allResults = [];
+        let consoleBuffer = [];
+        
+        // Intercepter console.log pour l'afficher dans l'interface
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addConsoleLine(args.join(' '), 'success');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addConsoleLine(args.join(' '), 'error');
+        };
+        
+        function addConsoleLine(text, type = 'info') {
+            consoleBuffer.push({ text, type });
+        }
+        
+        function updateConsoleDisplay() {
+            const consoleLines = document.getElementById('consoleLines');
+            const consoleOutput = document.getElementById('consoleOutput');
+            
+            consoleOutput.style.display = 'block';
+            consoleLines.innerHTML = consoleBuffer.map(line => 
+                `<div class="console-line ${line.type}">${escapeHtml(line.text)}</div>`
+            ).join('');
+            
+            // Scroll vers le bas
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function updateSummary(passed, failed, total) {
+            document.getElementById('summary').style.display = 'flex';
+            document.getElementById('passedCount').textContent = passed;
+            document.getElementById('failedCount').textContent = failed;
+            document.getElementById('totalCount').textContent = total;
+        }
+        
+        function displayTestResults(suiteResults) {
+            const container = document.getElementById('testResults');
+            container.innerHTML = '';
+            
+            for (const suite of suiteResults) {
+                const suiteEl = document.createElement('div');
+                suiteEl.className = 'test-suite';
+                
+                const passedInSuite = suite.tests.filter(t => t.passed).length;
+                const failedInSuite = suite.tests.filter(t => !t.passed).length;
+                
+                suiteEl.innerHTML = `
+                    <div class="suite-header" onclick="toggleSuite(this)">
+                        <h3>${suite.name}</h3>
+                        <span class="suite-stats">
+                            ✅ ${passedInSuite} | ❌ ${failedInSuite}
+                        </span>
+                    </div>
+                    <div class="test-list">
+                        ${suite.tests.map(test => `
+                            <div class="test-item ${test.passed ? 'passed' : 'failed'}">
+                                <span class="test-icon">${test.passed ? '✅' : '❌'}</span>
+                                <div class="test-content">
+                                    <div class="test-name">${escapeHtml(test.name)}</div>
+                                    ${test.error ? `<div class="test-error">${escapeHtml(test.error)}</div>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(suiteEl);
+            }
+        }
+        
+        function toggleSuite(header) {
+            const testList = header.nextElementSibling;
+            testList.classList.toggle('expanded');
+        }
+        
+        async function runTestSuite(name, testsFn) {
+            const runner = new TestRunner();
+            const results = [];
+            
+            // Enregistrer les tests
+            testsFn(runner);
+            
+            // Exécuter et collecter les résultats détaillés
+            for (const test of runner.tests) {
+                try {
+                    await test.testFn();
+                    results.push({ name: test.name, passed: true });
+                } catch (error) {
+                    results.push({ name: test.name, passed: false, error: error.message });
+                }
+            }
+            
+            return {
+                name,
+                tests: results,
+                passed: results.filter(r => r.passed).length,
+                failed: results.filter(r => !r.passed).length
+            };
+        }
+        
+        async function runAllTests() {
+            consoleBuffer = [];
+            showLoading(true);
+            
+            const suites = [
+                { name: '🌟 Tests Astronomy', fn: astronomyTests },
+                { name: '📷 Tests Camera', fn: cameraTests },
+                { name: '🔗 Tests Intégration', fn: integrationTests }
+            ];
+            
+            allResults = [];
+            let totalPassed = 0;
+            let totalFailed = 0;
+            
+            for (const suite of suites) {
+                try {
+                    const result = await runTestSuite(suite.name, suite.fn);
+                    allResults.push(result);
+                    totalPassed += result.passed;
+                    totalFailed += result.failed;
+                } catch (error) {
+                    console.error(`Erreur dans ${suite.name}:`, error);
+                }
+            }
+            
+            showLoading(false);
+            updateSummary(totalPassed, totalFailed, totalPassed + totalFailed);
+            displayTestResults(allResults);
+            updateConsoleDisplay();
+        }
+        
+        async function runSuite(suiteName) {
+            consoleBuffer = [];
+            showLoading(true);
+            
+            const suiteMap = {
+                'astronomy': { name: '🌟 Tests Astronomy', fn: astronomyTests },
+                'camera': { name: '📷 Tests Camera', fn: cameraTests },
+                'integration': { name: '🔗 Tests Intégration', fn: integrationTests }
+            };
+            
+            const suite = suiteMap[suiteName];
+            if (!suite) {
+                showLoading(false);
+                return;
+            }
+            
+            try {
+                const result = await runTestSuite(suite.name, suite.fn);
+                showLoading(false);
+                updateSummary(result.passed, result.failed, result.passed + result.failed);
+                displayTestResults([result]);
+                updateConsoleDisplay();
+            } catch (error) {
+                showLoading(false);
+                console.error(`Erreur dans ${suite.name}:`, error);
+            }
+        }
+        
+        // Message de bienvenue
+        console.log('🧪 Suite de tests prête. Cliquez sur un bouton pour démarrer.');
+    </script>
+</body>
+</html>

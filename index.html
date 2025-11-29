@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carte du Ciel — Lyon</title>
+    <style>
+        :root {
+            --bg: #0b0b0d;
+            --accent: #4a90d9;
+            --accent-glow: rgba(74, 144, 217, 0.4);
+            --switch-bg: #1a1a2e;
+            --switch-active: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: #eee;
+        }
+        
+        /* Barre supérieure */
+        .topbar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 56px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            pointer-events: auto;
+            z-index: 50;
+            gap: 20px;
+        }
+        
+        .app-title {
+            position: absolute;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .app-title span {
+            margin-right: 8px;
+        }
+        
+        /* Container du switch toggle */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .switch-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            transition: color 0.3s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+        
+        .switch-label.active {
+            color: #fff;
+        }
+        
+        .switch-label:hover {
+            color: #fff;
+        }
+        
+        /* Switch toggle style iOS/moderne */
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 34px;
+            cursor: pointer;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--switch-bg);
+            border-radius: 34px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--switch-active);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(36px);
+        }
+        
+        .toggle-switch:hover .toggle-slider {
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:hover {
+            border-color: var(--accent);
+        }
+        
+        /* Icônes dans les labels */
+        .mode-icon {
+            font-size: 1.1rem;
+            margin-right: 4px;
+        }
+        
+        /* Container des iframes */
+        .container {
+            position: fixed;
+            inset: 0;
+            top: 0;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: var(--bg);
+        }
+        
+        /* Note en bas */
+        .note {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 12px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 50;
+        }
+        
+        .note kbd {
+            background: rgba(255,255,255,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 11px;
+            margin: 0 2px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .app-title {
+                display: none;
+            }
+            
+            .switch-label {
+                font-size: 0.8rem;
+            }
+            
+            .toggle-switch {
+                width: 60px;
+                height: 30px;
+            }
+            
+            .toggle-slider:before {
+                height: 22px;
+                width: 22px;
+            }
+            
+            .toggle-switch input:checked + .toggle-slider:before {
+                transform: translateX(30px);
+            }
+            
+            .note {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="app-title">
+            <span>🌟</span> Carte du Ciel
+        </div>
+        
+        <div class="switch-container">
+            <label class="switch-label active" id="label-pov" for="modeToggle">
+                <span class="mode-icon">👁️</span>POV
+            </label>
+            
+            <label class="toggle-switch" title="Basculer entre Mode POV et Mode Télescope">
+                <input type="checkbox" id="modeToggle" aria-label="Changer de mode d'affichage">
+                <span class="toggle-slider"></span>
+            </label>
+            
+            <label class="switch-label" id="label-tel" for="modeToggle">
+                <span class="mode-icon">🔭</span>Télescope
+            </label>
+        </div>
+    </div>
+
+    <div class="container">
+        <iframe id="frame-pov" src="affichage_pov/index.html" title="Mode POV"></iframe>
+        <iframe id="frame-tel" src="affichage_telescope/index.html" title="Mode Télescope" style="display:none"></iframe>
+    </div>
+
+    <script>
+        const modeToggle = document.getElementById('modeToggle');
+        const labelPov = document.getElementById('label-pov');
+        const labelTel = document.getElementById('label-tel');
+        const framePov = document.getElementById('frame-pov');
+        const frameTel = document.getElementById('frame-tel');
+
+        function setMode(mode) {
+            const isTelescope = mode === 'telescope';
+            
+            // Mettre à jour le toggle
+            modeToggle.checked = isTelescope;
+            
+            // Mettre à jour les labels
+            labelPov.classList.toggle('active', !isTelescope);
+            labelTel.classList.toggle('active', isTelescope);
+            
+            // Basculer les iframes
+            framePov.style.display = isTelescope ? 'none' : '';
+            frameTel.style.display = isTelescope ? '' : 'none';
+        }
+
+        // Événement du toggle
+        modeToggle.addEventListener('change', () => {
+            setMode(modeToggle.checked ? 'telescope' : 'pov');
+        });
+        
+        // Clic sur les labels
+        labelPov.addEventListener('click', (e) => {
+            e.preventDefault();
+            setMode('pov');
+        });
+        
+        labelTel.addEventListener('click', (e) => {
+            e.preventDefault();
+            setMode('telescope');
+        });
+    </script>
+</body>
+</html>

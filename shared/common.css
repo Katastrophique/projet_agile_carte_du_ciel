@@ -1,0 +1,192 @@
+/* ==========================================================================
+   Carte du Ciel - Styles CSS Partagés
+   Éléments communs aux deux modes d'affichage
+   ========================================================================== */
+
+/* Variables CSS globales */
+:root {
+    /* Couleurs de fond */
+    --bg-dark: #000814;
+    --bg-primary: #0a0a1a;
+    --bg-secondary: #12122a;
+    --canvas-bg: #000510;
+    
+    /* Couleurs de texte */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: #a0a0c0;
+    
+    /* Couleur d'accent */
+    --accent-color: #4a90d9;
+    --accent-light: rgba(74, 144, 217, 0.3);
+    --accent-glow: rgba(74, 144, 217, 0.8);
+    
+    /* Bordures et overlays */
+    --border-color: rgba(74, 144, 217, 0.3);
+    --overlay-bg: rgba(0, 8, 20, 0.75);
+    --overlay-bg-light: rgba(0, 8, 20, 0.5);
+    
+    /* Couleurs d'état */
+    --error-color: #ff6b6b;
+    --success-color: #4caf50;
+}
+
+/* Reset global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base */
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Overlay de chargement (commun aux deux modes) */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#loadingMessage {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Message d'erreur */
+.error-message {
+    background: rgba(217, 74, 74, 0.2);
+    border: 1px solid #d94a4a;
+    color: var(--error-color);
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Animation de scintillement */
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Canvas - styles de base */
+#skyCanvas {
+    cursor: grab;
+    touch-action: none;
+}
+
+#skyCanvas:active {
+    cursor: grabbing;
+}
+
+/* Points cardinaux */
+.cardinal-marker,
+.cardinal-label {
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-glow), 0 2px 4px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
+
+/* Titres avec dégradé */
+.gradient-title {
+    background: linear-gradient(90deg, #fff 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Panneaux d'information */
+.info-panel,
+.panel-content {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+/* Stats */
+.stats {
+    background: rgba(74, 144, 217, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.stats span,
+.stat-item span:not(.stat-icon) {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Instructions et légendes */
+.instructions h3,
+.legend h3,
+.panel-section h4 {
+    color: var(--accent-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.instructions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.instructions li,
+.legend p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+/* Responsive helpers */
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}

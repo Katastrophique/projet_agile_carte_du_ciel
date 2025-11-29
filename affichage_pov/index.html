@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Carte du Ciel - Lyon</title>
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Canvas plein écran pour le ciel -->
+    <canvas id="skyCanvas"></canvas>
+    
+    <!-- Overlay de l'interface -->
+    <div class="ui-overlay">
+        <!-- Header transparent -->
+        <header class="overlay-header">
+            <div class="header-left">
+                <h1>🌟 Carte du Ciel</h1>
+                <span class="location">Lyon, France</span>
+            </div>
+            <div class="header-right">
+                <span id="datetime" class="datetime"></span>
+            </div>
+        </header>
+        
+        <!-- Indicateur de direction central (en haut) -->
+        <div class="direction-indicator">
+            <span id="directionDisplay">→ Sud 30°</span>
+        </div>
+        
+        <!-- Footer transparent avec informations -->
+        <footer class="overlay-footer">
+            <div class="footer-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">⭐</span>
+                    <span id="starCount">0</span> étoiles
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🧭</span>
+                    <span id="directionName">Sud</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🔭</span>
+                    FOV: <span id="fovDisplay">90°</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🔍</span>
+                    Zoom: <span id="zoomLevel">1.0x</span>
+                </div>
+            </div>
+            <div class="footer-instructions">
+                <span>🖱️ Clic-glisser pour pivoter</span>
+                <span class="separator">|</span>
+                <span>🖱️ Molette pour zoomer</span>
+                <span class="separator">|</span>
+                <span>Double-clic pour reset</span>
+            </div>
+        </footer>
+        
+        <!-- Panneau latéral repliable (optionnel) -->
+        <div id="sidePanel" class="side-panel collapsed">
+            <button id="togglePanel" class="toggle-panel-btn" title="Afficher/Masquer le panneau">
+                <span class="toggle-icon">◀</span>
+            </button>
+            <div class="panel-content">
+                <h3>Informations</h3>
+                <div class="panel-section">
+                    <h4>Position</h4>
+                    <p>Latitude: 45.7578° N</p>
+                    <p>Longitude: 4.8320° E</p>
+                </div>
+                <div class="panel-section">
+                    <h4>Contrôles</h4>
+                    <ul>
+                        <li><strong>Pivoter:</strong> Clic + glisser</li>
+                        <li><strong>Zoomer:</strong> Molette souris</li>
+                        <li><strong>Reset:</strong> Double-clic</li>
+                    </ul>
+                </div>
+                <div class="panel-section">
+                    <h4>Légende</h4>
+                    <p>La taille des étoiles indique leur luminosité.</p>
+                    <p>Les étoiles proches de l'horizon sont légèrement atténuées.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Message de chargement -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Chargement des données stellaires...</p>
+        </div>
+    </div>
+
+    <!-- Scripts (ordre important) -->
+    <script src="../shared/astronomy.js"></script>
+    <script src="camera.js"></script>
+    <script src="canvas-controller.js"></script>
+    <script src="app.js"></script>
+    <script src="../shared/easter-eggs.js"></script>
+</body>
+</html>

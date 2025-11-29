@@ -1,0 +1,349 @@
+/* ==========================================================================
+   Carte du Ciel - Styles CSS (Vue POV immersive)
+   Styles spécifiques au mode POV plein écran
+   Les styles communs sont dans ../shared/common.css
+   ========================================================================== */
+
+/* Surcharge des variables pour le mode POV */
+:root {
+    --bg-zenith: #000814;
+    --bg-horizon: #0a1628;
+    --horizon-color: rgba(74, 144, 217, 0.4);
+}
+
+/* Mode plein écran */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Canvas plein écran */
+#skyCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+}
+
+#skyCanvas:active {
+    cursor: grabbing;
+}
+
+/* Overlay de l'interface */
+.ui-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* Header transparent */
+.overlay-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background: linear-gradient(to bottom, var(--overlay-bg) 0%, transparent 100%);
+}
+
+.header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+}
+
+.header-left h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.header-left .location {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.header-right .datetime {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Indicateur de direction central */
+.direction-indicator {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--overlay-bg-light);
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#directionDisplay {
+    color: var(--accent-color);
+}
+
+/* Footer transparent */
+.overlay-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px 25px;
+    background: linear-gradient(to top, var(--overlay-bg) 0%, transparent 100%);
+}
+
+.footer-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.stat-item span:not(.stat-icon) {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.stat-icon {
+    font-size: 1.1rem;
+}
+
+.footer-instructions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.footer-instructions .separator {
+    color: var(--border-color);
+}
+
+/* Panneau latéral repliable */
+.side-panel {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 280px;
+    background: var(--overlay-bg);
+    border-left: 1px solid var(--border-color);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.side-panel.collapsed {
+    transform: translateY(-50%) translateX(calc(100% - 40px));
+}
+
+.toggle-panel-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: var(--overlay-bg);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    color: var(--accent-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.toggle-panel-btn:hover {
+    background: rgba(74, 144, 217, 0.2);
+}
+
+.toggle-icon {
+    transition: transform 0.3s;
+}
+
+.side-panel.collapsed .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.panel-content {
+    padding: 20px;
+    padding-left: 50px;
+}
+
+.panel-content h3 {
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.panel-section {
+    margin-bottom: 20px;
+}
+
+.panel-section h4 {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.panel-section p,
+.panel-section li {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 5px 0;
+}
+
+.panel-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.panel-section li {
+    margin: 8px 0;
+}
+
+/* Surcharge loading overlay pour utiliser bg-zenith */
+.loading-overlay {
+    background: var(--bg-zenith);
+}
+
+/* Points cardinaux dynamiques (affichés sur le canvas via JS) */
+.cardinal-marker {
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(74, 144, 217, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .overlay-header {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .header-left h1 {
+        font-size: 1.2rem;
+    }
+    
+    .header-left .location {
+        font-size: 0.8rem;
+    }
+    
+    .direction-indicator {
+        top: 80px;
+        font-size: 0.95rem;
+        padding: 6px 15px;
+    }
+    
+    .footer-stats {
+        gap: 15px;
+    }
+    
+    .stat-item {
+        font-size: 0.85rem;
+    }
+    
+    .footer-instructions {
+        font-size: 0.75rem;
+    }
+    
+    .side-panel {
+        width: 240px;
+    }
+    
+    .panel-content {
+        padding: 15px;
+        padding-left: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .overlay-header {
+        padding: 8px 12px;
+    }
+    
+    .header-left h1 {
+        font-size: 1rem;
+    }
+    
+    .header-right .datetime {
+        font-size: 0.75rem;
+    }
+    
+    .direction-indicator {
+        top: 70px;
+        font-size: 0.85rem;
+    }
+    
+    .footer-stats {
+        gap: 10px;
+    }
+    
+    .stat-item {
+        font-size: 0.75rem;
+        gap: 5px;
+    }
+    
+    .footer-instructions {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .footer-instructions .separator {
+        display: none;
+    }
+    
+    .side-panel {
+        display: none;
+    }
+}
+
+/* Styles pour le curseur personnalisé sur le canvas */
+.canvas-grabbing {
+    cursor: grabbing !important;
+}

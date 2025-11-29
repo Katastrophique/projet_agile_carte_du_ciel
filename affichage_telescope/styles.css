@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Carte du Ciel - Styles CSS (Vue Télescope)
+   Styles spécifiques au mode télescope avec projection azimutale
+   Les styles communs sont dans ../shared/common.css
+   ========================================================================== */
+
+/* Mode avec conteneur */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+/* Container principal */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* En-tête */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #fff 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.observation-info {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.observation-info p {
+    margin: 5px 0;
+}
+
+/* Contenu principal */
+.main-content {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    flex: 1;
+}
+
+/* Container du canvas avec les labels cardinaux */
+.canvas-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--canvas-bg);
+    border-radius: 50%;
+    padding: 30px;
+    box-shadow: 
+        0 0 40px rgba(74, 144, 217, 0.2),
+        inset 0 0 60px rgba(0, 5, 16, 0.8);
+}
+
+/* Canvas spécifique télescope */
+#skyCanvas {
+    display: block;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, #0a0a20 0%, #000000 100%);
+}
+
+/* Labels des directions cardinales */
+.cardinal-label.north {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cardinal-label.south {
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cardinal-label.east {
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.cardinal-label.west {
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Panneau d'informations - surcharges spécifiques */
+.info-panel {
+    padding: 20px;
+    min-width: 280px;
+    max-width: 320px;
+}
+
+.stats p {
+    margin: 8px 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .info-panel {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+    .canvas-container {
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .canvas-container {
+        padding: 15px;
+    }
+    
+    .cardinal-label {
+        font-size: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .observation-info {
+        font-size: 0.85rem;
+    }
+}
