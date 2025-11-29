@@ -21,7 +21,7 @@ Les étoiles visibles à l'œil nu (magnitude < 6) sont affichées et calculées
   - 🔄 **Réinitialisation** : Double-clic
 - **Taille des étoiles** : Proportionnelle à leur luminosité
 
-### Mode POV (immersif)
+### Mode Planétarium (immersif)
 - Vue panoramique à 360°
 - Contrôle de la direction de vue (Nord, Sud, Est, Ouest)
 - Effet d'atténuation des étoiles proches de l'horizon
@@ -123,7 +123,7 @@ L'application effectue les calculs suivants (dans `shared/astronomy.js`) :
    - Azimut = arccos((sin(Dec) - sin(Alt)×sin(Lat)) / (cos(Alt)×cos(Lat)))
 
 3. **Projection** :
-   - **Mode POV** : Projection perspective avec caméra orientable
+   - **Mode Planétarium** : Projection perspective avec caméra orientable
    - **Mode Télescope** : Projection azimutale équidistante
 
 ## 📍 Configuration
