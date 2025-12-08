@@ -97,6 +97,18 @@ class CanvasController {
                 sidePanel.classList.toggle('collapsed');
             });
         }
+
+
+        // Paneau filtre 
+        const leftPanel = document.getElementById("leftPanel");
+        const toggleLeft = document.getElementById("toggleLeftPanel");
+
+        if (leftPanel && toggleLeft) {
+        toggleLeft.addEventListener("click", () => {
+            leftPanel.classList.toggle("collapsed");
+        });
+    }
+
     }
     
     /**

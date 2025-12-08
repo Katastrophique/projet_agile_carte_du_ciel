@@ -6,6 +6,7 @@
     <title>Carte du Ciel - Lyon</title>
     <link rel="stylesheet" href="../shared/common.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../menu_filtre/menu_filtre.css" 
 </head>
 <body>
     <!-- Canvas plein écran pour le ciel -->
@@ -58,6 +59,7 @@
             </div>
         </footer>
         
+        
         <!-- Panneau latéral repliable (optionnel) -->
         <div id="sidePanel" class="side-panel collapsed">
             <button id="togglePanel" class="toggle-panel-btn" title="Afficher/Masquer le panneau">
@@ -85,8 +87,47 @@
                 </div>
             </div>
         </div>
+
+          
+        <!-- PANNEAU GAUCHE - MENU FILTRE -->
+        <div id="leftPanel" class="side-panel-left collapsed">
+            <button id="toggleLeftPanel" class="toggle-left-btn" title="Afficher/Masquer le panneau">
+                <span class="toggle-left-icon">☰</span>
+            </button>
+            <div class="panel-content-left"> 
+                <h3>Menu filtre</h3>
+
+               <div class="panel-section">
+    <h4>Filtres disponibles</h4>
+
+    <ul class="filter-list">
+        <li class="filter-btn" data-filter="nearby">50 étoiles les plus proches</li>
+        <li class="filter-btn" data-filter="brightest">50 étoiles les plus brillantes</li>
+        <li class="filter-btn" data-filter="hottest">50 étoiles les plus chaudes</li>
+        <li class="filter-btn" data-filter="largest">50 étoiles les plus grosses</li>
+        <li class="filter-btn" data-filter="constellation">Filtrer par constellation</li>
+    </ul>
+</div>
+
+                <!-- SECTION AIDE / INFO -->
+                <div class="panel-section">
+                    <h4>Aide</h4>
+                    <p>Sélectionnez un mode d'affichage pour modifier la visualisation de la carte du ciel.</p>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        </div>
     </div>
     
+
+
+
+
+
     <!-- Message de chargement -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
@@ -101,5 +142,6 @@
     <script src="canvas-controller.js"></script>
     <script src="app.js"></script>
     <script src="../shared/easter-eggs.js"></script>
+    <script src="../menu_filtre/menu_filtre.js"></script>
 </body>
 </html>
