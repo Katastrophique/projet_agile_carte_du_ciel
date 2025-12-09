@@ -338,8 +338,39 @@ html, body {
         display: none;
     }
     
+    /* Panneau Informations adapté au mobile */
     .side-panel {
-        display: none;
+        width: 220px;
+        top: auto;
+        bottom: 120px;
+        transform: translateY(0);
+    }
+    
+    .side-panel.collapsed {
+        transform: translateX(calc(100% - 40px));
+    }
+    
+    .panel-content {
+        padding: 12px;
+        padding-left: 45px;
+    }
+    
+    .panel-content h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .panel-section {
+        margin-bottom: 12px;
+    }
+    
+    .panel-section h4 {
+        font-size: 0.8rem;
+    }
+    
+    .panel-section p,
+    .panel-section li {
+        font-size: 0.75rem;
     }
 }
 
