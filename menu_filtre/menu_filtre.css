@@ -90,3 +90,42 @@
     transform: translateX(4px);
 }
 
+/* =============================
+   RESPONSIVE MOBILE
+   ============================= */
+
+@media (max-width: 480px) {
+    .side-panel-left {
+        width: 220px;
+        top: auto;
+        bottom: 120px;
+        transform: translateY(0);
+    }
+    
+    .side-panel-left.collapsed {
+        transform: translateX(calc(-100% + 40px));
+    }
+    
+    .panel-content-left {
+        padding: 12px;
+        padding-right: 45px;
+    }
+    
+    .panel-content-left h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .filter-btn {
+        padding: 8px 0;
+        font-size: 0.8rem;
+    }
+    
+    .panel-section h4 {
+        font-size: 0.8rem;
+    }
+    
+    .panel-section p {
+        font-size: 0.75rem;
+    }
+}
