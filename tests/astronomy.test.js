@@ -1,16 +1,5 @@
-/**
- * ==========================================================================
- * Tests Unitaires - Module Astronomy.js
- * ==========================================================================
- * 
- * Tests pour valider les calculs astronomiques
- */
-
 const astronomyTests = (runner) => {
     
-    // ========================================================================
-    // Tests des fonctions de conversion d'angles
-    // ========================================================================
     
     runner.test('degreesToRadians - convertit correctement 0°', () => {
         const result = Astronomy.degreesToRadians(0);
@@ -54,10 +43,6 @@ const astronomyTests = (runner) => {
         assert.approximately(back, original, 0.0001);
     });
     
-    // ========================================================================
-    // Tests de normalizeAngle
-    // ========================================================================
-    
     runner.test('normalizeAngle - angle déjà normalisé (0-360)', () => {
         assert.equals(Astronomy.normalizeAngle(45), 45);
         assert.equals(Astronomy.normalizeAngle(180), 180);
@@ -81,19 +66,13 @@ const astronomyTests = (runner) => {
         assert.isTrue(result >= 0 && result < 360, 'Le résultat devrait être entre 0 et 360');
     });
     
-    // ========================================================================
-    // Tests de dateToJulianDay
-    // ========================================================================
-    
     runner.test('dateToJulianDay - J2000.0 (1er janvier 2000 à 12h TT)', () => {
-        // J2000.0 correspond au Jour Julien 2451545.0
         const j2000 = new Date(Date.UTC(2000, 0, 1, 12, 0, 0));
         const jd = Astronomy.dateToJulianDay(j2000);
         assert.approximately(jd, 2451545.0, 0.01);
     });
     
     runner.test('dateToJulianDay - date connue (1er janvier 2020)', () => {
-        // Le 1er janvier 2020 à 0h UTC ≈ JD 2458849.5
         const date = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));
         const jd = Astronomy.dateToJulianDay(date);
         assert.approximately(jd, 2458849.5, 0.01);
@@ -107,10 +86,6 @@ const astronomyTests = (runner) => {
         assert.approximately(jd2 - jd1, 1.0, 0.001, 'Une différence d\'un jour devrait donner JD +1');
     });
     
-    // ========================================================================
-    // Tests de calculateGST
-    // ========================================================================
-    
     runner.test('calculateGST - retourne une valeur entre 0 et 360', () => {
         const date = new Date();
         const gst = Astronomy.calculateGST(date);
@@ -122,13 +97,8 @@ const astronomyTests = (runner) => {
         const date2 = new Date(Date.UTC(2024, 5, 15, 6, 0, 0));
         const gst1 = Astronomy.calculateGST(date1);
         const gst2 = Astronomy.calculateGST(date2);
-        // En 6 heures, le GST devrait changer d'environ 90° (6h × 15°/h)
         assert.isTrue(gst1 !== gst2, 'GST devrait varier avec le temps');
     });
-    
-    // ========================================================================
-    // Tests de calculateLST
-    // ========================================================================
     
     runner.test('calculateLST - retourne une valeur entre 0 et 360', () => {
         const date = new Date();
@@ -139,23 +109,17 @@ const astronomyTests = (runner) => {
     runner.test('calculateLST - diffère du GST par la longitude', () => {
         const date = new Date();
         const gst = Astronomy.calculateGST(date);
-        const lst = Astronomy.calculateLST(date, 0); // Longitude 0 (Greenwich)
-        // À Greenwich, LST = GST
+        const lst = Astronomy.calculateLST(date, 0);
         assert.approximately(lst, gst, 0.01, 'À Greenwich, LST devrait égaler GST');
     });
     
     runner.test('calculateLST - longitude Est augmente LST', () => {
         const date = new Date();
         const lstGreenwich = Astronomy.calculateLST(date, 0);
-        const lstEst = Astronomy.calculateLST(date, 15); // 15° Est
-        // LST Est devrait être > LST Greenwich (modulo 360)
+        const lstEst = Astronomy.calculateLST(date, 15);
         const diff = Astronomy.normalizeAngle(lstEst - lstGreenwich);
         assert.approximately(diff, 15, 0.01);
     });
-    
-    // ========================================================================
-    // Tests de equatorialToHorizontal
-    // ========================================================================
     
     runner.test('equatorialToHorizontal - retourne altitude et azimut', () => {
         const result = Astronomy.equatorialToHorizontal(0, 45, 0, 45);
@@ -176,33 +140,24 @@ const astronomyTests = (runner) => {
     });
     
     runner.test('equatorialToHorizontal - étoile au méridien sud', () => {
-        // Quand LST = RA, l'étoile est sur le méridien
-        const ra = 180; // 12h en degrés
+        const ra = 180;
         const dec = 0;
         const lst = 180;
         const lat = 45;
         const result = Astronomy.equatorialToHorizontal(ra, dec, lst, lat);
-        // L'azimut devrait être proche de 180° (Sud)
         assert.approximately(result.azimut, 180, 5);
     });
     
     runner.test('equatorialToHorizontal - étoile polaire au nord (latitude positive)', () => {
-        // Polaris : RA ≈ 2h 30m, Dec ≈ +89°
-        const ra = 2.5 * 15; // Convertir heures en degrés
+        const ra = 2.5 * 15;
         const dec = 89;
         const lst = 0;
         const lat = 45;
         const result = Astronomy.equatorialToHorizontal(ra, dec, lst, lat);
-        // L'altitude devrait être proche de la latitude (car c'est une étoile polaire)
         assert.approximately(result.altitude, lat, 3, 'Altitude de Polaris ≈ latitude');
-        // L'azimut devrait être proche du Nord (0° ou 360°)
         const azNormalized = result.azimut < 180 ? result.azimut : 360 - result.azimut;
         assert.isTrue(azNormalized < 10 || azNormalized > 350, 'Polaris devrait être au Nord');
     });
-    
-    // ========================================================================
-    // Tests de isStarVisible
-    // ========================================================================
     
     runner.test('isStarVisible - altitude positive = visible', () => {
         assert.isTrue(Astronomy.isStarVisible(45));
@@ -219,24 +174,19 @@ const astronomyTests = (runner) => {
         assert.isFalse(Astronomy.isStarVisible(0));
     });
     
-    // ========================================================================
-    // Tests de calculateVisibleStars
-    // ========================================================================
-    
     runner.test('calculateVisibleStars - filtre les étoiles sous l\'horizon', () => {
         const stars = [
-            { ra: 0, dec: 89, mag: 2 },   // Près du pôle Nord - toujours visible en France
-            { ra: 12, dec: -89, mag: 2 }  // Près du pôle Sud - jamais visible en France
+            { ra: 0, dec: 89, mag: 2 },
+            { ra: 12, dec: -89, mag: 2 }
         ];
         const date = new Date();
         const visible = Astronomy.calculateVisibleStars(stars, date);
-        // Au moins l'étoile circumpolaire devrait être visible
         assert.isTrue(visible.length >= 1, 'Au moins une étoile devrait être visible');
     });
     
     runner.test('calculateVisibleStars - ajoute altitude et azimut aux résultats', () => {
         const stars = [
-            { ra: 0, dec: 89, mag: 2 }  // Étoile circumpolaire
+            { ra: 0, dec: 89, mag: 2 }
         ];
         const date = new Date();
         const visible = Astronomy.calculateVisibleStars(stars, date);
@@ -246,13 +196,9 @@ const astronomyTests = (runner) => {
         }
     });
     
-    // ========================================================================
-    // Tests de calculateStarSize
-    // ========================================================================
-    
     runner.test('calculateStarSize - étoiles brillantes plus grandes', () => {
-        const sizeBright = Astronomy.calculateStarSize(-1, 1); // Sirius
-        const sizeDim = Astronomy.calculateStarSize(5, 1);      // Étoile faible
+        const sizeBright = Astronomy.calculateStarSize(-1, 1);
+        const sizeDim = Astronomy.calculateStarSize(5, 1);
         assert.isTrue(sizeBright > sizeDim, 'Étoile brillante devrait être plus grande');
     });
     
@@ -274,10 +220,6 @@ const astronomyTests = (runner) => {
         assert.isTrue(sizeDim >= 0.5, 'Taille min = 0.5');
     });
     
-    // ========================================================================
-    // Tests de formatDateTime
-    // ========================================================================
-    
     runner.test('formatDateTime - retourne une chaîne non vide', () => {
         const date = new Date();
         const formatted = Astronomy.formatDateTime(date);
@@ -290,22 +232,17 @@ const astronomyTests = (runner) => {
         assert.isTrue(formatted.includes('2024'), 'Devrait contenir l\'année');
     });
     
-    // ========================================================================
-    // Tests de getStarColor
-    // ========================================================================
-    
     runner.test('getStarColor - retourne une couleur valide', () => {
         const color = Astronomy.getStarColor(0);
         assert.isTrue(color.startsWith('#'), 'Devrait être un code couleur hex');
     });
     
     runner.test('getStarColor - fonctionne avec différents indices', () => {
-        const color1 = Astronomy.getStarColor(-0.3); // Étoile bleue
-        const color2 = Astronomy.getStarColor(1.5);  // Étoile rouge
+        const color1 = Astronomy.getStarColor(-0.3);
+        const color2 = Astronomy.getStarColor(1.5);
         assert.isDefined(color1);
         assert.isDefined(color2);
     });
 };
 
-// Export pour utilisation dans le navigateur
 window.astronomyTests = astronomyTests;

@@ -1,22 +1,11 @@
-/**
- * ==========================================================================
- * Easter Eggs - Module secret 🥚
- * ==========================================================================
- * 
- * Chut... c'est un secret ! 🤫
- */
-
 class EasterEggs {
     constructor() {
-        // Buffer pour détecter les séquences de touches
         this.keyBuffer = '';
         this.maxBufferLength = 20;
         
-        // Konami Code : ↑↑↓↓←→←→BA
         this.konamiCode = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightba';
         this.konamiBuffer = '';
         
-        // Mots secrets
         this.secretWords = {
             'brainrot': () => this.triggerBrainrot(),
             'skibidi': () => this.triggerSkibidi(),
@@ -24,23 +13,16 @@ class EasterEggs {
             'ohio': () => this.triggerOhio()
         };
         
-        // État des easter eggs
         this.isEasterEggActive = false;
         
-        // Créer le conteneur d'easter eggs
         this.createEasterEggContainer();
         
-        // Écouter les touches
         this.initKeyListener();
         
         console.log('🥚 Easter eggs loaded... but you didn\'t see anything 👀');
     }
     
-    /**
-     * Crée le conteneur HTML pour les easter eggs
-     */
     createEasterEggContainer() {
-        // Container principal (invisible par défaut)
         this.container = document.createElement('div');
         this.container.id = 'easter-egg-container';
         this.container.style.cssText = `
@@ -58,7 +40,6 @@ class EasterEggs {
             transition: opacity 0.3s ease;
         `;
         
-        // Image de l'easter egg
         this.easterImage = document.createElement('img');
         this.easterImage.id = 'easter-egg-image';
         this.easterImage.style.cssText = `
@@ -70,7 +51,6 @@ class EasterEggs {
             filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
         `;
         
-        // Texte de l'easter egg
         this.easterText = document.createElement('div');
         this.easterText.id = 'easter-egg-text';
         this.easterText.style.cssText = `
@@ -89,7 +69,6 @@ class EasterEggs {
         this.container.appendChild(this.easterText);
         document.body.appendChild(this.container);
         
-        // Style pour les animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes shake {
@@ -128,17 +107,12 @@ class EasterEggs {
         document.head.appendChild(style);
     }
     
-    /**
-     * Initialise l'écouteur de touches
-     */
     initKeyListener() {
         document.addEventListener('keydown', (e) => {
-            // Ignorer si on est dans un input
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
                 return;
             }
             
-            // Buffer pour le Konami Code (touches spéciales)
             if (e.key.startsWith('Arrow') || e.key === 'a' || e.key === 'b') {
                 this.konamiBuffer += e.key;
                 if (this.konamiBuffer.length > this.konamiCode.length) {
@@ -150,14 +124,12 @@ class EasterEggs {
                 }
             }
             
-            // Buffer pour les mots secrets (lettres uniquement)
             if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
                 this.keyBuffer += e.key.toLowerCase();
                 if (this.keyBuffer.length > this.maxBufferLength) {
                     this.keyBuffer = this.keyBuffer.slice(-this.maxBufferLength);
                 }
                 
-                // Vérifier les mots secrets
                 for (const [word, callback] of Object.entries(this.secretWords)) {
                     if (this.keyBuffer.endsWith(word)) {
                         callback();
@@ -169,42 +141,29 @@ class EasterEggs {
         });
     }
     
-
-    
-    /**
-     * Affiche un easter egg
-     */
     showEasterEgg(imageSrc, text, animation, duration = 3000) {
         if (this.isEasterEggActive) return;
         this.isEasterEggActive = true;
         
-        // Configurer l'image
         this.easterImage.src = imageSrc;
         this.easterImage.className = '';
         
-        // Configurer le texte
         this.easterText.textContent = text;
         
-        // Afficher le container
         this.container.style.opacity = '1';
         this.container.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         
-        // Animer l'apparition
         setTimeout(() => {
             this.easterImage.style.transform = 'scale(1)';
             this.easterImage.classList.add(animation);
             this.easterText.style.opacity = '1';
         }, 100);
         
-        // Cacher après un délai
         setTimeout(() => {
             this.hideEasterEgg();
         }, duration);
     }
     
-    /**
-     * Cache l'easter egg
-     */
     hideEasterEgg() {
         this.easterImage.style.transform = 'scale(0)';
         this.easterText.style.opacity = '0';
@@ -217,13 +176,6 @@ class EasterEggs {
         }, 500);
     }
     
-    // ========================================================================
-    // Easter Eggs Triggers
-    // ========================================================================
-    
-    /**
-     * 🧠 BRAINROT - Tape "brainrot"
-     */
     triggerBrainrot() {
         console.log('🧠 BRAINROT ACTIVATED!');
         this.showEasterEgg(
@@ -232,14 +184,8 @@ class EasterEggs {
             'easter-glitch',
             4000
         );
-        
-        // Effet sonore (optionnel - commenté car pas de fichier audio)
-        // this.playSound('brainrot.mp3');
     }
     
-    /**
-     * ☀️ Konami Code - ↑↑↓↓←→←→BA
-     */
     triggerKonami() {
         console.log('🎮 KONAMI CODE ACTIVATED!');
         this.showEasterEgg(
@@ -250,9 +196,6 @@ class EasterEggs {
         );
     }
     
-    /**
-     * 🗿 SIGMA - Tape "sigma"
-     */
     triggerSigma() {
         console.log('🗿 SIGMA ACTIVATED!');
         this.showEasterEgg(
@@ -263,9 +206,6 @@ class EasterEggs {
         );
     }
     
-    /**
-     * 🌽 SKIBIDI - Tape "skibidi"
-     */
     triggerSkibidi() {
         console.log('🚽 SKIBIDI ACTIVATED!');
         this.showEasterEgg(
@@ -276,13 +216,9 @@ class EasterEggs {
         );
     }
     
-    /**
-     * 🌽 OHIO - Tape "ohio"
-     */
     triggerOhio() {
         console.log('🌽 OHIO ACTIVATED!');
         
-        // Effet spécial : inverser les couleurs du canvas temporairement
         const canvas = document.getElementById('skyCanvas');
         if (canvas) {
             canvas.style.filter = 'invert(1) hue-rotate(180deg)';
@@ -299,13 +235,9 @@ class EasterEggs {
         );
     }
     
-    /**
-     * 🎮 Menu secret - 7 clics sur le titre
-     */
     triggerSecretMenu() {
         console.log('🎮 SECRET MENU DISCOVERED!');
         
-        // Afficher tous les easter eggs disponibles
         const secretInfo = document.createElement('div');
         secretInfo.style.cssText = `
             position: fixed;
@@ -334,7 +266,6 @@ class EasterEggs {
         
         document.body.appendChild(secretInfo);
         
-        // Fermer au clic
         const closeMenu = () => {
             secretInfo.remove();
             document.removeEventListener('click', closeMenu);
@@ -345,9 +276,7 @@ class EasterEggs {
     }
 }
 
-// Initialiser les easter eggs quand le DOM est prêt
 document.addEventListener('DOMContentLoaded', () => {
-    // Petit délai pour s'assurer que tout est chargé
     setTimeout(() => {
         window.easterEggs = new EasterEggs();
     }, 1000);

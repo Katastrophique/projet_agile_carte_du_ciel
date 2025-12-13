@@ -1,19 +1,6 @@
-/**
- * ==========================================================================
- * Tests Unitaires - Module Camera.js
- * ==========================================================================
- * 
- * Tests pour valider le système de caméra POV
- */
-
 const cameraTests = (runner) => {
     
-    // Créer une instance de caméra pour les tests
     let camera;
-    
-    // ========================================================================
-    // Tests d'initialisation
-    // ========================================================================
     
     runner.test('Camera - constructeur initialise les dimensions', () => {
         camera = new Camera(800, 600);
@@ -29,16 +16,11 @@ const cameraTests = (runner) => {
     
     runner.test('Camera - détecte correctement le mode portrait', () => {
         const cameraPortrait = new Camera(400, 800);
-        // En portrait, l'altitude par défaut devrait être plus élevée
         assert.equals(cameraPortrait.altitude, 50);
         
         const cameraLandscape = new Camera(800, 400);
         assert.equals(cameraLandscape.altitude, 30);
     });
-    
-    // ========================================================================
-    // Tests de updateDimensions
-    // ========================================================================
     
     runner.test('Camera - updateDimensions met à jour les dimensions', () => {
         camera = new Camera(800, 600);
@@ -47,23 +29,17 @@ const cameraTests = (runner) => {
         assert.equals(camera.height, 1080);
     });
     
-    // ========================================================================
-    // Tests de projection
-    // ========================================================================
-    
     runner.test('Camera - project retourne null pour étoile derrière la caméra', () => {
         camera = new Camera(800, 600);
-        camera.azimuth = 0; // Regarde vers le Nord
-        // Étoile au Sud (azimut 180°) - derrière la caméra
+        camera.azimuth = 0;
         const result = camera.project(180, 45);
         assert.isNull(result, 'Étoile derrière devrait retourner null');
     });
     
     runner.test('Camera - project retourne coordonnées pour étoile visible', () => {
         camera = new Camera(800, 600);
-        camera.azimuth = 180; // Regarde vers le Sud
+        camera.azimuth = 180;
         camera.altitude = 45;
-        // Étoile au Sud, haute dans le ciel
         const result = camera.project(180, 45);
         assert.isDefined(result, 'Étoile visible devrait retourner des coordonnées');
         assert.hasProperty(result, 'x');
@@ -75,10 +51,8 @@ const cameraTests = (runner) => {
         camera = new Camera(800, 600);
         camera.azimuth = 180;
         camera.altitude = 45;
-        // Étoile exactement dans la direction de vue
         const result = camera.project(180, 45);
         assert.isDefined(result);
-        // Devrait être proche du centre de l'écran
         assert.approximately(result.x, 400, 50, 'X devrait être proche du centre');
         assert.approximately(result.y, 300, 50, 'Y devrait être proche du centre');
     });
@@ -93,15 +67,10 @@ const cameraTests = (runner) => {
             'Distance du centre devrait être ~0 pour étoile centrée');
     });
     
-    // ========================================================================
-    // Tests de getVerticalFov
-    // ========================================================================
-    
     runner.test('Camera - getVerticalFov avec aspect ratio 16:9', () => {
         camera = new Camera(1600, 900);
         camera.fov = 90;
         const vFov = camera.getVerticalFov();
-        // Avec ratio 16:9, le FOV vertical devrait être ~50.6°
         assert.approximately(vFov, 50.625, 0.1);
     });
     
@@ -109,13 +78,8 @@ const cameraTests = (runner) => {
         camera = new Camera(800, 600);
         camera.fov = 90;
         const vFov = camera.getVerticalFov();
-        // Avec ratio 4:3, le FOV vertical devrait être 67.5°
         assert.approximately(vFov, 67.5, 0.1);
     });
-    
-    // ========================================================================
-    // Tests de rotation
-    // ========================================================================
     
     runner.test('Camera - rotate modifie l\'azimut', () => {
         camera = new Camera(800, 600);
@@ -128,7 +92,6 @@ const cameraTests = (runner) => {
         camera = new Camera(800, 600);
         camera.azimuth = 350;
         camera.rotate(20, 0);
-        // 350 + 20 = 370 → normalisé à 10
         assert.approximately(camera.azimuth, 10, 0.001);
     });
     
@@ -142,29 +105,25 @@ const cameraTests = (runner) => {
     runner.test('Camera - rotate respecte les limites d\'altitude', () => {
         camera = new Camera(800, 600);
         camera.altitude = 85;
-        camera.rotate(0, 20); // Essayer de dépasser 90°
+        camera.rotate(0, 20);
         assert.equals(camera.altitude, camera.maxAltitude);
         
         camera.altitude = 0;
-        camera.rotate(0, -20); // Essayer de descendre sous le minimum
+        camera.rotate(0, -20);
         assert.equals(camera.altitude, camera.minAltitude);
     });
-    
-    // ========================================================================
-    // Tests de zoom
-    // ========================================================================
     
     runner.test('Camera - zoom diminue le FOV (zoom in)', () => {
         camera = new Camera(800, 600);
         camera.fov = 90;
-        camera.zoom(0.5); // Zoom in
+        camera.zoom(0.5);
         assert.equals(camera.fov, 45);
     });
     
     runner.test('Camera - zoom augmente le FOV (zoom out)', () => {
         camera = new Camera(800, 600);
         camera.fov = 90;
-        camera.zoom(1.5); // Zoom out
+        camera.zoom(1.5);
         assert.equals(camera.fov, 135);
     });
     
@@ -188,10 +147,6 @@ const cameraTests = (runner) => {
         assert.equals(camera.fov, 60);
     });
     
-    // ========================================================================
-    // Tests de reset
-    // ========================================================================
-    
     runner.test('Camera - reset restaure les valeurs par défaut', () => {
         camera = new Camera(800, 600);
         camera.azimuth = 45;
@@ -204,10 +159,6 @@ const cameraTests = (runner) => {
         assert.equals(camera.altitude, camera.defaultAltitude);
         assert.equals(camera.fov, camera.defaultFov);
     });
-    
-    // ========================================================================
-    // Tests de getDirectionName
-    // ========================================================================
     
     runner.test('Camera - getDirectionName retourne Nord', () => {
         camera = new Camera(800, 600);
@@ -252,10 +203,6 @@ const cameraTests = (runner) => {
         assert.equals(camera.getDirectionName(), 'Nord-Ouest');
     });
     
-    // ========================================================================
-    // Tests de getDirectionDescription
-    // ========================================================================
-    
     runner.test('Camera - getDirectionDescription inclut direction et altitude', () => {
         camera = new Camera(800, 600);
         camera.azimuth = 180;
@@ -264,10 +211,6 @@ const cameraTests = (runner) => {
         assert.isTrue(desc.includes('Sud'), 'Devrait inclure la direction');
         assert.isTrue(desc.includes('45'), 'Devrait inclure l\'altitude');
     });
-    
-    // ========================================================================
-    // Tests de getZoomLevel
-    // ========================================================================
     
     runner.test('Camera - getZoomLevel retourne 1.0 au FOV par défaut', () => {
         camera = new Camera(800, 600);
@@ -289,20 +232,16 @@ const cameraTests = (runner) => {
         assert.equals(zoom, 0.5);
     });
     
-    // ========================================================================
-    // Tests de l'horizon
-    // ========================================================================
-    
     runner.test('Camera - isHorizonVisible quand on regarde vers le bas', () => {
         camera = new Camera(800, 600);
-        camera.altitude = 10; // Regarde proche de l'horizon
+        camera.altitude = 10;
         camera.fov = 90;
         assert.isTrue(camera.isHorizonVisible());
     });
     
     runner.test('Camera - isHorizonVisible = false quand on regarde le zénith', () => {
         camera = new Camera(800, 600);
-        camera.altitude = 90; // Regarde tout droit vers le haut
+        camera.altitude = 90;
         camera.fov = 60;
         assert.isFalse(camera.isHorizonVisible());
     });
@@ -315,10 +254,6 @@ const cameraTests = (runner) => {
         assert.isDefined(horizonY);
         assert.isTrue(horizonY >= 0 && horizonY <= camera.height);
     });
-    
-    // ========================================================================
-    // Tests de getState / setState
-    // ========================================================================
     
     runner.test('Camera - getState retourne l\'état actuel', () => {
         camera = new Camera(800, 600);
@@ -346,14 +281,12 @@ const cameraTests = (runner) => {
     
     runner.test('Camera - projectCardinalPoint projette les points cardinaux', () => {
         camera = new Camera(800, 600);
-        camera.azimuth = 0; // Regarde vers le Nord
+        camera.azimuth = 0;
         camera.altitude = 10;
         
         const northPoint = camera.projectCardinalPoint(0);
-        // Le Nord devrait être visible et proche du centre horizontal
         assert.isDefined(northPoint);
     });
 };
 
-// Export pour utilisation dans le navigateur
 window.cameraTests = cameraTests;

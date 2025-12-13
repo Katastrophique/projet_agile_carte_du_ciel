@@ -1,4 +1,3 @@
-// faire le JS des filtre
 document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         const type = btn.dataset.filter;
