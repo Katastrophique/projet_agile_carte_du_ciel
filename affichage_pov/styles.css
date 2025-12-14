@@ -378,3 +378,68 @@ html, body {
 .canvas-grabbing {
     cursor: grabbing !important;
 }
+
+/* ==========================================================================
+   Popup d'information sur l'étoile
+   ========================================================================== */
+
+.star-popup {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    transition: opacity 0.15s ease-out;
+}
+
+.star-popup.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.star-popup-content {
+    background: rgba(10, 22, 40, 0.95);
+    border: 1px solid rgba(74, 144, 217, 0.6);
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(74, 144, 217, 0.2);
+    backdrop-filter: blur(8px);
+    min-width: 120px;
+    max-width: 250px;
+}
+
+.star-popup-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.star-popup-constellation {
+    font-size: 0.85rem;
+    color: rgba(74, 144, 217, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.star-popup-constellation::before {
+    content: '✦';
+    font-size: 0.7rem;
+}
+
+/* Responsive pour le popup */
+@media (max-width: 480px) {
+    .star-popup-content {
+        padding: 8px 12px;
+        min-width: 100px;
+    }
+    
+    .star-popup-name {
+        font-size: 0.9rem;
+    }
+    
+    .star-popup-constellation {
+        font-size: 0.8rem;
+    }
+}

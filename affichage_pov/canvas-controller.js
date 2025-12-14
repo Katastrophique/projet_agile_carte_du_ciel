@@ -19,6 +19,13 @@ class CanvasController {
         this.initialPinchDistance = 0;
         this.initialPinchFov = 60;
         
+        // Gestion du survol des étoiles
+        this.hoveredStar = null;
+        this.isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        this.touchStartTime = 0;
+        this.touchStartPos = { x: 0, y: 0 };
+        this.popupVisible = false;
+        
         this.resizeCanvas();
         
         this.camera = new Camera(this.canvas.width, this.canvas.height);
@@ -53,6 +60,11 @@ class CanvasController {
         this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
         this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
         this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+        
+        // Événements pour le survol des étoiles (desktop)
+        if (!this.isMobile) {
+            this.canvas.addEventListener('mousemove', (e) => this.handleStarHover(e));
+        }
         
         const toggleBtn = document.getElementById('togglePanel');
         const sidePanel = document.getElementById('sidePanel');
@@ -131,9 +143,14 @@ class CanvasController {
             this.initialPinchDistance = this.getPinchDistance(event.touches[0], event.touches[1]);
             this.initialPinchFov = this.camera.fov;
         } else if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            
+            // Enregistrer le début du touch pour détecter un tap
+            this.touchStartTime = Date.now();
+            this.touchStartPos = { x: touch.clientX, y: touch.clientY };
+            
             this.isDragging = true;
             this.isPinching = false;
-            const touch = event.touches[0];
             this.dragStartX = touch.clientX;
             this.dragStartY = touch.clientY;
             this.dragStartAzimuth = this.camera.azimuth;
@@ -177,6 +194,20 @@ class CanvasController {
             this.isPinching = false;
         }
         if (event.touches.length === 0) {
+            // Vérifier si c'était un tap (court et sans mouvement)
+            const touchDuration = Date.now() - this.touchStartTime;
+            const dx = Math.abs(event.changedTouches[0].clientX - this.touchStartPos.x);
+            const dy = Math.abs(event.changedTouches[0].clientY - this.touchStartPos.y);
+            const moved = dx > 10 || dy > 10;
+            
+            if (touchDuration < 300 && !moved) {
+                // C'est un tap ! Vérifier s'il y a une étoile
+                const rect = this.canvas.getBoundingClientRect();
+                const x = event.changedTouches[0].clientX - rect.left;
+                const y = event.changedTouches[0].clientY - rect.top;
+                this.handleStarTap(x, y, event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+            }
+            
             this.isDragging = false;
         }
     }
@@ -186,6 +217,75 @@ class CanvasController {
         this.camera.reset();
         this.updateUI();
         this.requestRender();
+    }
+    
+    // Gestion du survol des étoiles (desktop)
+    handleStarHover(event) {
+        // Ne pas traiter le survol pendant le drag
+        if (this.isDragging) {
+            this.hideStarInfo();
+            return;
+        }
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        if (typeof StarHover !== 'undefined') {
+            const star = StarHover.findStarAtPosition(x, y);
+            
+            if (star) {
+                if (this.hoveredStar !== star) {
+                    this.hoveredStar = star;
+                    StarHover.showStarPopup(star, event.clientX, event.clientY);
+                    StarHover.setHighlightedConstellation(star.constellation ? star.constellation.trim() : null);
+                    this.canvas.style.cursor = 'pointer';
+                }
+            } else {
+                this.hideStarInfo();
+            }
+        }
+    }
+    
+    // Gestion du tap sur les étoiles (mobile)
+    handleStarTap(x, y, clientX, clientY) {
+        if (typeof StarHover !== 'undefined') {
+            const star = StarHover.findStarAtPosition(x, y);
+            
+            if (star) {
+                // Si on tape sur une nouvelle étoile ou sur la même avec popup fermé
+                if (this.hoveredStar !== star || !this.popupVisible) {
+                    this.hoveredStar = star;
+                    this.popupVisible = true;
+                    StarHover.showStarPopup(star, clientX, clientY);
+                    StarHover.setHighlightedConstellation(star.constellation ? star.constellation.trim() : null);
+                } else {
+                    // Tap sur la même étoile avec popup visible -> fermer
+                    this.hideStarInfo();
+                }
+                return true; // Événement géré
+            } else if (this.popupVisible) {
+                // Tap ailleurs -> fermer le popup
+                this.hideStarInfo();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Cache les informations de l'étoile
+    hideStarInfo() {
+        if (this.hoveredStar || this.popupVisible) {
+            this.hoveredStar = null;
+            this.popupVisible = false;
+            if (typeof StarHover !== 'undefined') {
+                StarHover.hideStarPopup();
+                StarHover.clearHighlightedConstellation();
+            }
+            if (!this.isDragging) {
+                this.canvas.style.cursor = 'grab';
+            }
+        }
     }
     
     updateUI() {
@@ -308,11 +408,16 @@ class CanvasController {
         }
     }
     
-    drawStar(x, y, size, color, magnitude, distanceFromCenter, altitude, hasConstellation = false) {
+    drawStar(x, y, size, color, magnitude, distanceFromCenter, altitude, hasConstellation = false, isHighlighted = false) {
         const ctx = this.ctx;
         
         const perspectiveScale = 1 - (distanceFromCenter * 0.2);
         let adjustedSize = size * Math.max(0.5, perspectiveScale);
+        
+        // Agrandir légèrement les étoiles mises en évidence
+        if (isHighlighted) {
+            adjustedSize *= 1.3;
+        }
         
         let atmosphericDimming = 1;
         if (altitude < 20) {
@@ -320,9 +425,22 @@ class CanvasController {
         }
         
         const baseOpacity = Math.max(0.3, Math.min(1, (6 - magnitude) / 6));
-        const opacity = baseOpacity * atmosphericDimming;
+        const opacity = isHighlighted ? 1 : baseOpacity * atmosphericDimming;
         
-        if (size > 1.5 && magnitude < 3) {
+        // Halo spécial pour les étoiles mises en évidence
+        if (isHighlighted) {
+            const highlightGlowRadius = adjustedSize * 5;
+            const highlightGlow = ctx.createRadialGradient(x, y, 0, x, y, highlightGlowRadius);
+            highlightGlow.addColorStop(0, 'rgba(255, 200, 100, 0.6)');
+            highlightGlow.addColorStop(0.3, 'rgba(255, 180, 80, 0.3)');
+            highlightGlow.addColorStop(0.6, 'rgba(255, 150, 50, 0.1)');
+            highlightGlow.addColorStop(1, 'rgba(255, 150, 50, 0)');
+            
+            ctx.fillStyle = highlightGlow;
+            ctx.beginPath();
+            ctx.arc(x, y, highlightGlowRadius, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (size > 1.5 && magnitude < 3) {
             const glowRadius = adjustedSize * 4;
             const glow = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
             glow.addColorStop(0, `rgba(255, 255, 240, ${opacity * 0.4})`);
@@ -335,9 +453,12 @@ class CanvasController {
             ctx.fill();
         }
         
+        // Couleur de l'étoile (dorée si mise en évidence)
+        const starColor = isHighlighted ? '#FFD700' : color;
+        
         ctx.beginPath();
         ctx.arc(x, y, adjustedSize, 0, Math.PI * 2);
-        ctx.fillStyle = color;
+        ctx.fillStyle = starColor;
         ctx.globalAlpha = opacity;
         ctx.fill();
         ctx.globalAlpha = 1;
@@ -351,7 +472,14 @@ class CanvasController {
             ctx.globalAlpha = 1;
         }
         
-        if (hasConstellation) {
+        // Contour pour les étoiles de constellation ou mises en évidence
+        if (isHighlighted) {
+            ctx.strokeStyle = 'rgba(255, 200, 100, 0.9)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, adjustedSize + 2, 0, Math.PI * 2);
+            ctx.stroke();
+        } else if (hasConstellation) {
             ctx.strokeStyle = 'rgba(100, 200, 255, 0.6)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -360,20 +488,31 @@ class CanvasController {
         }
     }
     
-    drawConstellationLines(constellations) {
+    drawConstellationLines(constellations, highlightedConstellation = null) {
         if (!this.camera || !constellations || constellations.length === 0) return;
         
         const ctx = this.ctx;
         const camera = this.camera;
         
         ctx.save();
-        ctx.globalAlpha = 0.5;
         
         for (const constellation of constellations) {
-            const color = Constellations.getConstellationColor(constellation.name);
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            ctx.setLineDash([2, 3]);
+            const isHighlighted = highlightedConstellation && constellation.name === highlightedConstellation;
+            
+            if (isHighlighted) {
+                // Style mis en évidence : ligne pleine, plus épaisse, dorée
+                ctx.strokeStyle = 'rgba(255, 200, 100, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([]);
+                ctx.globalAlpha = 1;
+            } else {
+                // Style normal
+                const color = Constellations.getConstellationColor(constellation.name);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 3]);
+                ctx.globalAlpha = highlightedConstellation ? 0.2 : 0.5; // Atténuer si une autre est highlightée
+            }
             
             for (const connection of constellation.connections) {
                 const star1 = connection.star1;
