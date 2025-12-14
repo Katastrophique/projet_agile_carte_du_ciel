@@ -113,7 +113,7 @@ function getConstellationColor(constellationName) {
         hash = constellationName.charCodeAt(i) + ((hash << 5) - hash);
     }
     
-    const hue = (hash % 60) + 180;
+    const hue = hash % 360;
     const saturation = 60 + (hash % 20);
     const lightness = 70 + (hash % 10);
     
