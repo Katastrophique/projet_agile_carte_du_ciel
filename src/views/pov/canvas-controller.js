@@ -1,4 +1,12 @@
+/**
+ * Contrôleur de canvas pour la vue POV
+ * Gère les interactions utilisateur et le rendu
+ */
 class CanvasController {
+    /**
+     * @param {HTMLCanvasElement} canvas - Élément canvas
+     * @param {Function} onRenderNeeded - Callback appelé quand un rendu est nécessaire
+     */
     constructor(canvas, onRenderNeeded) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -19,7 +27,6 @@ class CanvasController {
         this.initialPinchDistance = 0;
         this.initialPinchFov = 60;
         
-        // Gestion du survol des étoiles
         this.hoveredStar = null;
         this.isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         this.touchStartTime = 0;
@@ -33,6 +40,9 @@ class CanvasController {
         this.initEventListeners();
     }
     
+    /**
+     * Redimensionne le canvas selon la taille de la fenêtre
+     */
     resizeCanvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -42,6 +52,9 @@ class CanvasController {
         }
     }
     
+    /**
+     * Initialise tous les écouteurs d'événements
+     */
     initEventListeners() {
         window.addEventListener('resize', () => {
             this.resizeCanvas();
@@ -61,7 +74,6 @@ class CanvasController {
         this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
         this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
         
-        // Événements pour le survol des étoiles (desktop)
         if (!this.isMobile) {
             this.canvas.addEventListener('mousemove', (e) => this.handleStarHover(e));
         }
@@ -84,6 +96,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Gère le zoom avec la molette de la souris
+     * @param {WheelEvent} event - Événement de molette
+     */
     handleZoom(event) {
         event.preventDefault();
         
@@ -95,6 +111,10 @@ class CanvasController {
         this.requestRender();
     }
     
+    /**
+     * Démarre le glissement de la caméra
+     * @param {MouseEvent} event - Événement de souris
+     */
     handleDragStart(event) {
         this.isDragging = true;
         this.dragStartX = event.clientX;
@@ -105,6 +125,10 @@ class CanvasController {
         this.canvas.style.cursor = 'grabbing';
     }
     
+    /**
+     * Gère le mouvement pendant le glissement
+     * @param {MouseEvent} event - Événement de souris
+     */
     handleDragMove(event) {
         if (!this.isDragging) return;
         
@@ -114,7 +138,7 @@ class CanvasController {
         const deltaAzimuth = -deltaX * this.rotationSensitivity;
         const deltaAltitude = deltaY * this.rotationSensitivity;
         
-        this.camera.azimuth = normalizeAngle(this.dragStartAzimuth + deltaAzimuth);
+        this.camera.azimuth = Astronomy.normalizeAngle(this.dragStartAzimuth + deltaAzimuth);
         this.camera.altitude = Math.max(this.camera.minAltitude, 
                                         Math.min(this.camera.maxAltitude, 
                                                 this.dragStartAltitude + deltaAltitude));
@@ -123,17 +147,31 @@ class CanvasController {
         this.requestRender();
     }
     
+    /**
+     * Termine le glissement
+     * @param {MouseEvent} event - Événement de souris
+     */
     handleDragEnd(event) {
         this.isDragging = false;
         this.canvas.style.cursor = 'grab';
     }
     
+    /**
+     * Calcule la distance entre deux points de contact
+     * @param {Touch} touch1 - Premier point de contact
+     * @param {Touch} touch2 - Deuxième point de contact
+     * @returns {number} Distance en pixels
+     */
     getPinchDistance(touch1, touch2) {
         const dx = touch1.clientX - touch2.clientX;
         const dy = touch1.clientY - touch2.clientY;
         return Math.sqrt(dx * dx + dy * dy);
     }
     
+    /**
+     * Gère le début d'un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchStart(event) {
         event.preventDefault();
         
@@ -145,7 +183,6 @@ class CanvasController {
         } else if (event.touches.length === 1) {
             const touch = event.touches[0];
             
-            // Enregistrer le début du touch pour détecter un tap
             this.touchStartTime = Date.now();
             this.touchStartPos = { x: touch.clientX, y: touch.clientY };
             
@@ -158,6 +195,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Gère le mouvement pendant un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchMove(event) {
         event.preventDefault();
         
@@ -179,7 +220,7 @@ class CanvasController {
             const deltaAzimuth = -deltaX * this.rotationSensitivity;
             const deltaAltitude = deltaY * this.rotationSensitivity;
             
-            this.camera.azimuth = normalizeAngle(this.dragStartAzimuth + deltaAzimuth);
+            this.camera.azimuth = Astronomy.normalizeAngle(this.dragStartAzimuth + deltaAzimuth);
             this.camera.altitude = Math.max(this.camera.minAltitude, 
                                             Math.min(this.camera.maxAltitude, 
                                                     this.dragStartAltitude + deltaAltitude));
@@ -189,19 +230,21 @@ class CanvasController {
         }
     }
     
+    /**
+     * Gère la fin d'un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchEnd(event) {
         if (event.touches.length < 2) {
             this.isPinching = false;
         }
         if (event.touches.length === 0) {
-            // Vérifier si c'était un tap (court et sans mouvement)
             const touchDuration = Date.now() - this.touchStartTime;
             const dx = Math.abs(event.changedTouches[0].clientX - this.touchStartPos.x);
             const dy = Math.abs(event.changedTouches[0].clientY - this.touchStartPos.y);
             const moved = dx > 10 || dy > 10;
             
             if (touchDuration < 300 && !moved) {
-                // C'est un tap ! Vérifier s'il y a une étoile
                 const rect = this.canvas.getBoundingClientRect();
                 const x = event.changedTouches[0].clientX - rect.left;
                 const y = event.changedTouches[0].clientY - rect.top;
@@ -212,6 +255,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Réinitialise la vue
+     * @param {Event} event - Événement
+     */
     handleReset(event) {
         event.preventDefault();
         this.camera.reset();
@@ -219,7 +266,10 @@ class CanvasController {
         this.requestRender();
     }
     
-    // Gestion du survol des étoiles (desktop)
+    /**
+     * Gère le survol des étoiles (desktop)
+     * @param {MouseEvent} event - Événement de souris
+     */
     handleStarHover(event) {
         // Ne pas traiter le survol pendant le drag
         if (this.isDragging) {
@@ -247,25 +297,29 @@ class CanvasController {
         }
     }
     
-    // Gestion du tap sur les étoiles (mobile)
+    /**
+     * Gère le tap sur les étoiles (mobile)
+     * @param {number} x - Coordonnée X relative au canvas
+     * @param {number} y - Coordonnée Y relative au canvas
+     * @param {number} clientX - Coordonnée X absolue
+     * @param {number} clientY - Coordonnée Y absolue
+     * @returns {boolean} True si l'événement a été géré
+     */
     handleStarTap(x, y, clientX, clientY) {
         if (typeof StarHover !== 'undefined') {
             const star = StarHover.findStarAtPosition(x, y);
             
             if (star) {
-                // Si on tape sur une nouvelle étoile ou sur la même avec popup fermé
                 if (this.hoveredStar !== star || !this.popupVisible) {
                     this.hoveredStar = star;
                     this.popupVisible = true;
                     StarHover.showStarPopup(star, clientX, clientY);
                     StarHover.setHighlightedConstellation(star.constellation ? star.constellation.trim() : null);
                 } else {
-                    // Tap sur la même étoile avec popup visible -> fermer
                     this.hideStarInfo();
                 }
-                return true; // Événement géré
+                return true;
             } else if (this.popupVisible) {
-                // Tap ailleurs -> fermer le popup
                 this.hideStarInfo();
                 return true;
             }
@@ -273,7 +327,9 @@ class CanvasController {
         return false;
     }
     
-    // Cache les informations de l'étoile
+    /**
+     * Cache les informations de l'étoile survolée
+     */
     hideStarInfo() {
         if (this.hoveredStar || this.popupVisible) {
             this.hoveredStar = null;
@@ -288,6 +344,9 @@ class CanvasController {
         }
     }
     
+    /**
+     * Met à jour l'interface utilisateur avec les informations de la caméra
+     */
     updateUI() {
         const directionDisplay = document.getElementById('directionDisplay');
         if (directionDisplay) {
@@ -310,12 +369,18 @@ class CanvasController {
         }
     }
     
+    /**
+     * Demande un nouveau rendu
+     */
     requestRender() {
         if (this.onRenderNeeded) {
             this.onRenderNeeded();
         }
     }
     
+    /**
+     * Efface le canvas et dessine l'arrière-plan
+     */
     clearCanvas() {
         const ctx = this.ctx;
         const width = this.canvas.width;
@@ -329,6 +394,9 @@ class CanvasController {
         this.drawCardinalPoints();
     }
     
+    /**
+     * Dessine la ligne d'horizon
+     */
     drawHorizon() {
         const isMobilePortrait = this.canvas.width < this.canvas.height;
         if (isMobilePortrait) {
@@ -368,6 +436,9 @@ class CanvasController {
         ctx.fillRect(0, horizonY - 100, this.canvas.width, 120);
     }
     
+    /**
+     * Dessine les points cardinaux
+     */
     drawCardinalPoints() {
         const ctx = this.ctx;
         const cardinals = [
@@ -408,13 +479,24 @@ class CanvasController {
         }
     }
     
+    /**
+     * Dessine une étoile sur le canvas
+     * @param {number} x - Coordonnée X
+     * @param {number} y - Coordonnée Y
+     * @param {number} size - Taille de l'étoile
+     * @param {string} color - Couleur de l'étoile
+     * @param {number} magnitude - Magnitude de l'étoile
+     * @param {number} distanceFromCenter - Distance du centre en unités normalisées
+     * @param {number} altitude - Altitude de l'étoile en degrés
+     * @param {boolean} [hasConstellation=false] - Si l'étoile fait partie d'une constellation
+     * @param {boolean} [isHighlighted=false] - Si l'étoile est mise en évidence
+     */
     drawStar(x, y, size, color, magnitude, distanceFromCenter, altitude, hasConstellation = false, isHighlighted = false) {
         const ctx = this.ctx;
         
         const perspectiveScale = 1 - (distanceFromCenter * 0.2);
         let adjustedSize = size * Math.max(0.5, perspectiveScale);
         
-        // Agrandir légèrement les étoiles mises en évidence
         if (isHighlighted) {
             adjustedSize *= 1.3;
         }
@@ -427,7 +509,6 @@ class CanvasController {
         const baseOpacity = Math.max(0.3, Math.min(1, (6 - magnitude) / 6));
         const opacity = isHighlighted ? 1 : baseOpacity * atmosphericDimming;
         
-        // Halo spécial pour les étoiles mises en évidence
         if (isHighlighted) {
             const highlightGlowRadius = adjustedSize * 5;
             const highlightGlow = ctx.createRadialGradient(x, y, 0, x, y, highlightGlowRadius);
@@ -453,7 +534,6 @@ class CanvasController {
             ctx.fill();
         }
         
-        // Couleur de l'étoile (dorée si mise en évidence)
         const starColor = isHighlighted ? '#FFD700' : color;
         
         ctx.beginPath();
@@ -472,7 +552,6 @@ class CanvasController {
             ctx.globalAlpha = 1;
         }
         
-        // Contour pour les étoiles de constellation ou mises en évidence
         if (isHighlighted) {
             ctx.strokeStyle = 'rgba(255, 200, 100, 0.9)';
             ctx.lineWidth = 2;
@@ -488,6 +567,11 @@ class CanvasController {
         }
     }
     
+    /**
+     * Dessine les lignes des constellations
+     * @param {Array<Object>} constellations - Liste des constellations
+     * @param {string|null} [highlightedConstellation=null] - Constellation mise en évidence
+     */
     drawConstellationLines(constellations, highlightedConstellation = null) {
         if (!this.camera || !constellations || constellations.length === 0) return;
         
@@ -500,18 +584,16 @@ class CanvasController {
             const isHighlighted = highlightedConstellation && constellation.name === highlightedConstellation;
             
             if (isHighlighted) {
-                // Style mis en évidence : ligne pleine, plus épaisse, dorée
                 ctx.strokeStyle = 'rgba(255, 200, 100, 0.8)';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([]);
                 ctx.globalAlpha = 1;
             } else {
-                // Style normal
                 const color = Constellations.getConstellationColor(constellation.name);
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1;
                 ctx.setLineDash([2, 3]);
-                ctx.globalAlpha = highlightedConstellation ? 0.2 : 0.5; // Atténuer si une autre est highlightée
+                ctx.globalAlpha = highlightedConstellation ? 0.2 : 0.5; 
             }
             
             for (const connection of constellation.connections) {
@@ -540,6 +622,13 @@ class CanvasController {
         ctx.restore();
     }
     
+    /**
+     * Vérifie si un point est visible sur le canvas
+     * @param {number} x - Coordonnée X
+     * @param {number} y - Coordonnée Y
+     * @param {number} [margin=10] - Marge en pixels
+     * @returns {boolean} True si le point est visible
+     */
     isPointVisible(x, y, margin = 10) {
         return x >= -margin && 
                x <= this.canvas.width + margin && 
@@ -547,12 +636,20 @@ class CanvasController {
                y <= this.canvas.height + margin;
     }
     
+    /**
+     * Obtient l'état actuel du contrôleur
+     * @returns {Object} État du contrôleur
+     */
     getState() {
         return {
             camera: this.camera.getState()
         };
     }
     
+    /**
+     * Restaure l'état du contrôleur
+     * @param {Object} state - État à restaurer
+     */
     setState(state) {
         if (state.camera) {
             this.camera.setState(state.camera);
@@ -561,3 +658,4 @@ class CanvasController {
         }
     }
 }
+

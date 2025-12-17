@@ -1,7 +1,7 @@
 /* ==========================================================================
    Carte du Ciel - Styles CSS (Vue POV immersive)
    Styles spécifiques au mode POV plein écran
-   Les styles communs sont dans ../shared/common.css
+   Les styles communs sont dans ../../shared/common.css
    ========================================================================== */
 
 /* Surcharge des variables pour le mode POV */
@@ -443,3 +443,4 @@ html, body {
         font-size: 0.8rem;
     }
 }
+

@@ -182,3 +182,4 @@ window.Astronomy = {
     calculateStarSize,
     getStarColor
 };
+
