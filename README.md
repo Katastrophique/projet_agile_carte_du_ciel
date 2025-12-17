@@ -1,3 +1,13 @@
+# __Définition OF Down __
+- **Commentaires dans le Code** les commentaires doivent être pertinents et pour les fonctions
+- **Nom de variable** les variables doivent être nommées clairement et précisément
+-**REVIEW**  la review se fait par 2 développeurs différents
+**Git** 1 branche = 1 fonctionnalité = 1 Merge Request
+**Nommenclature des banches**  le nom des branches doivent être ainsi : US-n°Ticket-TypeTicket-Fonctionnalite exemple : US-28-FEAT-CarteDuCiel) Exception   Si l’équipe est d’accord à l’unanimité il est possible de regrouper certaines fonctionnalités similaires dans une seule branche
+**Commit** Les commits doivent être rédigés de manière intelligible et explicite
+**Démo**  une démo doit être validée par le PO avant de Merge sur la Main
+
+
 # 🌟 Carte du Ciel - Lyon
 
 Application web interactive de visualisation du ciel étoilé visible depuis Lyon, France.
