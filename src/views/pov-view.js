@@ -167,7 +167,24 @@ class POVView {
      * @returns {Object|null} Étoile trouvée ou null
      */
     findStarAtPosition(x, y) {
-        return StarHover.findStarAtPosition(x, y, this.projectedStars);
+        // Recherche directe sans passer par la surcharge de StarHover
+        let closestStar = null;
+        let closestDistance = 15;
+        
+        for (const projected of this.projectedStars) {
+            const dx = projected.x - x;
+            const dy = projected.y - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            const detectionRadius = Math.max(projected.size * 2, 10);
+            
+            if (distance < detectionRadius && distance < closestDistance) {
+                closestDistance = distance;
+                closestStar = projected.star;
+            }
+        }
+        
+        return closestStar;
     }
 }
 
