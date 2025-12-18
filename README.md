@@ -1,4 +1,4 @@
-# __Définition OF Down __
+# __Définition OF Done __
 - **Commentaires dans le Code** les commentaires doivent être pertinents et pour les fonctions
 - **Nom de variable** les variables doivent être nommées clairement et précisément
 -**REVIEW**  la review se fait par 2 développeurs différents
