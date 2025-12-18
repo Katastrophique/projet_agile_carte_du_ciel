@@ -20,6 +20,7 @@ class POVView {
         this.currentDate = null;
         this.projectedStars = [];
         this.highlightedConstellation = null;
+        this.filteredStarIds = new Set();
     }
 
     /**
@@ -114,6 +115,8 @@ class POVView {
                                   star.constellation && 
                                   star.constellation.trim() === this.highlightedConstellation;
             
+            const isFiltered = this.filteredStarIds.size > 0 && this.filteredStarIds.has(String(star.id));
+            
             this.canvasController.drawStar(
                 projection.x, 
                 projection.y, 
@@ -123,7 +126,8 @@ class POVView {
                 projection.distanceFromCenter,
                 star.altitude,
                 hasConstellation,
-                isHighlighted
+                isHighlighted,
+                isFiltered
             );
             
             this.projectedStars.push({
@@ -161,13 +165,29 @@ class POVView {
     }
 
     /**
+     * Définit les étoiles filtrées à mettre en surbrillance
+     * @param {Set<string>} starIds - Set des IDs d'étoiles à mettre en surbrillance
+     */
+    setFilteredStars(starIds) {
+        this.filteredStarIds = starIds;
+        this.render();
+    }
+
+    /**
+     * Efface le filtre d'étoiles
+     */
+    clearFilteredStars() {
+        this.filteredStarIds = new Set();
+        this.render();
+    }
+
+    /**
      * Trouve une étoile à une position donnée
      * @param {number} x - Coordonnée X
      * @param {number} y - Coordonnée Y
      * @returns {Object|null} Étoile trouvée ou null
      */
     findStarAtPosition(x, y) {
-        // Recherche directe sans passer par la surcharge de StarHover
         let closestStar = null;
         let closestDistance = 15;
         
