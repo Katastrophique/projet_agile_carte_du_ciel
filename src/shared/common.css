@@ -3,42 +3,34 @@
    Éléments communs aux deux modes d'affichage
    ========================================================================== */
 
-/* Variables CSS globales */
 :root {
-    /* Couleurs de fond */
     --bg-dark: #000814;
     --bg-primary: #0a0a1a;
     --bg-secondary: #12122a;
     --canvas-bg: #000510;
     
-    /* Couleurs de texte */
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --text-muted: #a0a0c0;
     
-    /* Couleur d'accent */
     --accent-color: #4a90d9;
     --accent-light: rgba(74, 144, 217, 0.3);
     --accent-glow: rgba(74, 144, 217, 0.8);
     
-    /* Bordures et overlays */
     --border-color: rgba(74, 144, 217, 0.3);
     --overlay-bg: rgba(0, 8, 20, 0.75);
     --overlay-bg-light: rgba(0, 8, 20, 0.5);
     
-    /* Couleurs d'état */
     --error-color: #ff6b6b;
     --success-color: #4caf50;
 }
 
-/* Reset global */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Base */
 html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--bg-dark);
@@ -46,7 +38,6 @@ html, body {
     line-height: 1.6;
 }
 
-/* Overlay de chargement (commun aux deux modes) */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -91,7 +82,6 @@ html, body {
     color: var(--text-secondary);
 }
 
-/* Message d'erreur */
 .error-message {
     background: rgba(217, 74, 74, 0.2);
     border: 1px solid #d94a4a;
@@ -102,13 +92,11 @@ html, body {
     margin: 20px 0;
 }
 
-/* Animation de scintillement */
 @keyframes twinkle {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
 }
 
-/* Canvas - styles de base */
 #skyCanvas {
     cursor: grab;
     touch-action: none;
@@ -118,7 +106,6 @@ html, body {
     cursor: grabbing;
 }
 
-/* Points cardinaux */
 .cardinal-marker,
 .cardinal-label {
     font-weight: bold;
@@ -127,7 +114,6 @@ html, body {
     pointer-events: none;
 }
 
-/* Titres avec dégradé */
 .gradient-title {
     background: linear-gradient(90deg, #fff 0%, var(--accent-color) 100%);
     -webkit-background-clip: text;
@@ -135,7 +121,6 @@ html, body {
     background-clip: text;
 }
 
-/* Panneaux d'information */
 .info-panel,
 .panel-content {
     background: rgba(255, 255, 255, 0.05);
@@ -143,7 +128,6 @@ html, body {
     border-radius: 12px;
 }
 
-/* Stats */
 .stats {
     background: rgba(74, 144, 217, 0.1);
     border-radius: 8px;
@@ -156,7 +140,6 @@ html, body {
     font-weight: bold;
 }
 
-/* Instructions et légendes */
 .instructions h3,
 .legend h3,
 .panel-section h4 {
@@ -178,7 +161,6 @@ html, body {
     margin: 8px 0;
 }
 
-/* Responsive helpers */
 @media (max-width: 768px) {
     .hide-mobile {
         display: none !important;
@@ -190,3 +172,4 @@ html, body {
         display: none !important;
     }
 }
+

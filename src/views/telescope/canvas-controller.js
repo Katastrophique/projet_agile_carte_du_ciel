@@ -1,4 +1,12 @@
+/**
+ * Contrôleur de canvas pour la vue Télescope
+ * Gère les interactions utilisateur et le rendu avec projection azimutale
+ */
 class CanvasController {
+    /**
+     * @param {HTMLCanvasElement} canvas - Élément canvas
+     * @param {Function} onRenderNeeded - Callback appelé quand un rendu est nécessaire
+     */
     constructor(canvas, onRenderNeeded) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -31,6 +39,9 @@ class CanvasController {
         this.initEventListeners();
     }
     
+    /**
+     * Redimensionne le canvas selon la taille de la fenêtre
+     */
     resizeCanvas() {
         const maxWidth = window.innerWidth - 80;
         const maxHeight = window.innerHeight - 300;
@@ -45,6 +56,9 @@ class CanvasController {
         this.projectionRadius = Math.min(this.canvas.width, this.canvas.height) / 2 - 20;
     }
     
+    /**
+     * Initialise tous les écouteurs d'événements
+     */
     initEventListeners() {
         window.addEventListener('resize', () => {
             this.resizeCanvas();
@@ -65,6 +79,10 @@ class CanvasController {
         this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
     }
     
+    /**
+     * Gère le zoom avec la molette de la souris
+     * @param {WheelEvent} event - Événement de molette
+     */
     handleZoom(event) {
         event.preventDefault();
         
@@ -93,6 +111,10 @@ class CanvasController {
         this.requestRender();
     }
     
+    /**
+     * Démarre le pan (déplacement) de la vue
+     * @param {MouseEvent} event - Événement de souris
+     */
     handlePanStart(event) {
         this.isDragging = true;
         this.dragStartX = event.clientX;
@@ -103,6 +125,10 @@ class CanvasController {
         this.canvas.style.cursor = 'grabbing';
     }
     
+    /**
+     * Gère le mouvement pendant le pan
+     * @param {MouseEvent} event - Événement de souris
+     */
     handlePanMove(event) {
         if (!this.isDragging) return;
         
@@ -115,17 +141,31 @@ class CanvasController {
         this.requestRender();
     }
     
+    /**
+     * Termine le pan
+     * @param {MouseEvent} event - Événement de souris
+     */
     handlePanEnd(event) {
         this.isDragging = false;
         this.canvas.style.cursor = 'grab';
     }
     
+    /**
+     * Calcule la distance entre deux points de contact
+     * @param {Touch} touch1 - Premier point de contact
+     * @param {Touch} touch2 - Deuxième point de contact
+     * @returns {number} Distance en pixels
+     */
     getPinchDistance(touch1, touch2) {
         const dx = touch1.clientX - touch2.clientX;
         const dy = touch1.clientY - touch2.clientY;
         return Math.sqrt(dx * dx + dy * dy);
     }
     
+    /**
+     * Gère le début d'un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchStart(event) {
         event.preventDefault();
         
@@ -145,6 +185,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Gère le mouvement pendant un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchMove(event) {
         event.preventDefault();
         
@@ -170,6 +214,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Gère la fin d'un contact tactile
+     * @param {TouchEvent} event - Événement tactile
+     */
     handleTouchEnd(event) {
         if (event.touches.length < 2) {
             this.isPinching = false;
@@ -179,6 +227,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Réinitialise la vue
+     * @param {Event} event - Événement
+     */
     resetView(event) {
         if (event) event.preventDefault();
         
@@ -190,6 +242,9 @@ class CanvasController {
         this.requestRender();
     }
     
+    /**
+     * Met à jour l'affichage du niveau de zoom
+     */
     updateZoomDisplay() {
         const zoomDisplay = document.getElementById('zoomLevel');
         if (zoomDisplay) {
@@ -197,12 +252,21 @@ class CanvasController {
         }
     }
     
+    /**
+     * Demande un nouveau rendu
+     */
     requestRender() {
         if (this.onRenderNeeded) {
             this.onRenderNeeded();
         }
     }
     
+    /**
+     * Convertit des coordonnées horizontales en coordonnées écran
+     * @param {number} azimut - Azimut en degrés
+     * @param {number} altitude - Altitude en degrés
+     * @returns {Object|null} Coordonnées {x, y} ou null si hors champ
+     */
     worldToScreen(azimut, altitude) {
         if (altitude < 0) {
             return null;
@@ -212,7 +276,7 @@ class CanvasController {
         
         const r = zenithDistance * this.projectionRadius * this.zoomLevel;
         
-        const angleRad = degreesToRadians(azimut - 90);
+        const angleRad = Astronomy.degreesToRadians(azimut - 90);
         
         const x = this.centerX + r * Math.cos(angleRad) + this.offsetX;
         const y = this.centerY + r * Math.sin(angleRad) + this.offsetY;
@@ -220,6 +284,13 @@ class CanvasController {
         return { x, y };
     }
     
+    /**
+     * Vérifie si un point est visible sur le canvas
+     * @param {number} x - Coordonnée X
+     * @param {number} y - Coordonnée Y
+     * @param {number} [margin=10] - Marge en pixels
+     * @returns {boolean} True si le point est visible
+     */
     isPointVisible(x, y, margin = 10) {
         return x >= -margin && 
                x <= this.canvas.width + margin && 
@@ -227,6 +298,9 @@ class CanvasController {
                y <= this.canvas.height + margin;
     }
     
+    /**
+     * Efface le canvas et dessine l'arrière-plan
+     */
     clearCanvas() {
         const ctx = this.ctx;
         const width = this.canvas.width;
@@ -255,6 +329,9 @@ class CanvasController {
         this.drawAzimuthLines();
     }
     
+    /**
+     * Dessine les cercles d'altitude
+     */
     drawAltitudeCircles() {
         const ctx = this.ctx;
         
@@ -269,6 +346,9 @@ class CanvasController {
         });
     }
     
+    /**
+     * Dessine les lignes d'azimut
+     */
     drawAzimuthLines() {
         const ctx = this.ctx;
         const radius = this.projectionRadius * this.zoomLevel;
@@ -277,7 +357,7 @@ class CanvasController {
         ctx.lineWidth = 1;
         
         [0, 90, 180, 270].forEach(az => {
-            const angleRad = degreesToRadians(az - 90);
+            const angleRad = Astronomy.degreesToRadians(az - 90);
             const endX = this.centerX + this.offsetX + radius * Math.cos(angleRad);
             const endY = this.centerY + this.offsetY + radius * Math.sin(angleRad);
             
@@ -288,6 +368,10 @@ class CanvasController {
         });
     }
     
+    /**
+     * Dessine les lignes des constellations
+     * @param {Array<Object>} constellations - Liste des constellations
+     */
     drawConstellationLines(constellations) {
         if (!constellations || constellations.length === 0) return;
         
@@ -328,6 +412,15 @@ class CanvasController {
         ctx.restore();
     }
     
+    /**
+     * Dessine une étoile sur le canvas
+     * @param {number} x - Coordonnée X
+     * @param {number} y - Coordonnée Y
+     * @param {number} size - Taille de l'étoile
+     * @param {string} color - Couleur de l'étoile
+     * @param {number} magnitude - Magnitude de l'étoile
+     * @param {boolean} [hasConstellation=false] - Si l'étoile fait partie d'une constellation
+     */
     drawStar(x, y, size, color, magnitude, hasConstellation = false) {
         const ctx = this.ctx;
         
@@ -359,6 +452,10 @@ class CanvasController {
         }
     }
     
+    /**
+     * Obtient l'état actuel du contrôleur
+     * @returns {Object} État du contrôleur
+     */
     getState() {
         return {
             zoomLevel: this.zoomLevel,
@@ -367,6 +464,10 @@ class CanvasController {
         };
     }
     
+    /**
+     * Restaure l'état du contrôleur
+     * @param {Object} state - État à restaurer
+     */
     setState(state) {
         if (state.zoomLevel !== undefined) this.zoomLevel = state.zoomLevel;
         if (state.offsetX !== undefined) this.offsetX = state.offsetX;
@@ -376,3 +477,4 @@ class CanvasController {
         this.requestRender();
     }
 }
+

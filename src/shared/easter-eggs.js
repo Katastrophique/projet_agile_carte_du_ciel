@@ -1,4 +1,10 @@
+/**
+ * Classe de gestion des easter eggs
+ */
 class EasterEggs {
+    /**
+     * Constructeur de la classe EasterEggs
+     */
     constructor() {
         this.keyBuffer = '';
         this.maxBufferLength = 20;
@@ -18,10 +24,11 @@ class EasterEggs {
         this.createEasterEggContainer();
         
         this.initKeyListener();
-        
-        console.log('🥚 Easter eggs loaded... but you didn\'t see anything 👀');
     }
     
+    /**
+     * Crée le conteneur DOM pour les easter eggs
+     */
     createEasterEggContainer() {
         this.container = document.createElement('div');
         this.container.id = 'easter-egg-container';
@@ -107,6 +114,9 @@ class EasterEggs {
         document.head.appendChild(style);
     }
     
+    /**
+     * Initialise l'écouteur de touches pour détecter les easter eggs
+     */
     initKeyListener() {
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
@@ -141,6 +151,13 @@ class EasterEggs {
         });
     }
     
+    /**
+     * Affiche un easter egg
+     * @param {string} imageSrc - Chemin vers l'image
+     * @param {string} text - Texte à afficher
+     * @param {string} animation - Classe d'animation CSS
+     * @param {number} [duration=3000] - Durée d'affichage en ms
+     */
     showEasterEgg(imageSrc, text, animation, duration = 3000) {
         if (this.isEasterEggActive) return;
         this.isEasterEggActive = true;
@@ -164,6 +181,9 @@ class EasterEggs {
         }, duration);
     }
     
+    /**
+     * Cache l'easter egg
+     */
     hideEasterEgg() {
         this.easterImage.style.transform = 'scale(0)';
         this.easterText.style.opacity = '0';
@@ -176,49 +196,58 @@ class EasterEggs {
         }, 500);
     }
     
+    /**
+     * Déclenche l'easter egg "brainrot"
+     */
     triggerBrainrot() {
-        console.log('🧠 BRAINROT ACTIVATED!');
         this.showEasterEgg(
-            '../shared/assets/stars.png',
+            'assets/stars.png',
             '🧠 BRAINROT MODE ACTIVATED 🧠',
             'easter-glitch',
             4000
         );
     }
     
+    /**
+     * Déclenche l'easter egg "Konami Code"
+     */
     triggerKonami() {
-        console.log('🎮 KONAMI CODE ACTIVATED!');
         this.showEasterEgg(
-            '../shared/assets/sun.png',
+            'assets/sun.png',
             '☀️ +30 LIVES ☀️',
             'easter-spin',
             4000
         );
     }
     
+    /**
+     * Déclenche l'easter egg "sigma"
+     */
     triggerSigma() {
-        console.log('🗿 SIGMA ACTIVATED!');
         this.showEasterEgg(
-            '../shared/assets/sun.png',
+            'assets/sun.png',
             '🗿 SIGMA GRINDSET 🗿',
             'easter-bounce',
             3000
         );
     }
     
+    /**
+     * Déclenche l'easter egg "skibidi"
+     */
     triggerSkibidi() {
-        console.log('🚽 SKIBIDI ACTIVATED!');
         this.showEasterEgg(
-            '../shared/assets/stars.png',
+            'assets/stars.png',
             '🚽 SKIBIDI BOP BOP YES YES 🚽',
             'easter-shake',
             3500
         );
     }
     
+    /**
+     * Déclenche l'easter egg "ohio"
+     */
     triggerOhio() {
-        console.log('🌽 OHIO ACTIVATED!');
-        
         const canvas = document.getElementById('skyCanvas');
         if (canvas) {
             canvas.style.filter = 'invert(1) hue-rotate(180deg)';
@@ -228,16 +257,17 @@ class EasterEggs {
         }
         
         this.showEasterEgg(
-            '../shared/assets/sun.png',
+            'assets/sun.png',
             '🌽 ONLY IN OHIO 🌽',
             'easter-rainbow',
             3000
         );
     }
     
+    /**
+     * Affiche le menu secret
+     */
     triggerSecretMenu() {
-        console.log('🎮 SECRET MENU DISCOVERED!');
-        
         const secretInfo = document.createElement('div');
         secretInfo.style.cssText = `
             position: fixed;
@@ -281,3 +311,4 @@ document.addEventListener('DOMContentLoaded', () => {
         window.easterEggs = new EasterEggs();
     }, 1000);
 });
+

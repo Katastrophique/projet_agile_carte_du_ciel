@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Carte du Ciel - Lyon</title>
-    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="../../shared/common.css">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="../menu_filtre/menu_filtre.css" 
+    <link rel="stylesheet" href="../../ui/menu_filtre.css">
 </head>
 <body>
-    <!-- Canvas plein écran pour le ciel -->
     <canvas id="skyCanvas"></canvas>
     
-    <!-- Overlay de l'interface -->
     <div class="ui-overlay">
-        <!-- Header transparent -->
         <header class="overlay-header">
             <div class="header-left">
                 <h1>🌟 Carte du Ciel</h1>
@@ -25,12 +22,10 @@
             </div>
         </header>
         
-        <!-- Indicateur de direction central (en haut) -->
         <div class="direction-indicator">
             <span id="directionDisplay">→ Sud 30°</span>
         </div>
         
-        <!-- Footer transparent avec informations -->
         <footer class="overlay-footer">
             <div class="footer-stats">
                 <div class="stat-item">
@@ -53,7 +48,6 @@
         </footer>
         
         
-        <!-- Panneau latéral repliable (optionnel) -->
         <div id="sidePanel" class="side-panel collapsed">
             <button id="togglePanel" class="toggle-panel-btn" title="Afficher/Masquer le panneau">
                 <span class="toggle-icon">☰</span>
@@ -82,7 +76,6 @@
         </div>
 
           
-        <!-- PANNEAU GAUCHE - MENU FILTRE -->
         <div id="leftPanel" class="side-panel-left collapsed">
             <button id="toggleLeftPanel" class="toggle-left-btn" title="Afficher/Masquer le panneau">
                 <span class="toggle-left-icon">☰</span>
@@ -102,7 +95,6 @@
     </ul>
 </div>
 
-                <!-- SECTION AIDE / INFO -->
                 <div class="panel-section">
                     <h4>Aide</h4>
                     <p>Sélectionnez un mode d'affichage pour modifier la visualisation de la carte du ciel.</p>
@@ -115,13 +107,8 @@
 
         </div>
     </div>
-    
 
 
-
-
-
-    <!-- Popup d'information sur l'étoile -->
     <div id="starPopup" class="star-popup hidden">
         <div class="star-popup-content">
             <div class="star-popup-name" id="popupStarName">-</div>
@@ -129,7 +116,6 @@
         </div>
     </div>
 
-    <!-- Message de chargement -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -137,13 +123,17 @@
         </div>
     </div>
 
-    <!-- Scripts (ordre important) -->
-    <script src="../shared/astronomy.js"></script>
-    <script src="../shared/constellations.js"></script>
+    <script src="../../shared/astronomy.js"></script>
+    <script src="../../shared/constellations.js"></script>
+    <script src="../../core/data-loader.js"></script>
+    <script src="../../core/ui-utils.js"></script>
+    <script src="../../core/star-hover.js"></script>
     <script src="camera.js"></script>
     <script src="canvas-controller.js"></script>
+    <script src="../pov-view.js"></script>
     <script src="app.js"></script>
-    <script src="../shared/easter-eggs.js"></script>
-    <script src="../menu_filtre/menu_filtre.js"></script>
+    <script src="../../shared/easter-eggs.js"></script>
+    <script src="../../ui/menu_filtre.js"></script>
 </body>
 </html>
+

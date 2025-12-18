@@ -127,3 +127,4 @@ window.Constellations = {
     getConstellationColor,
     calculateAngularDistance
 };
+

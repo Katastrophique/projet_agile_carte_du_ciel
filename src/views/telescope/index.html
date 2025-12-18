@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte du Ciel - Lyon</title>
-    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="../../shared/common.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <!-- En-tête avec titre et informations -->
         <header class="header">
             <h1>🌟 Carte du Ciel - Lyon</h1>
             <div class="observation-info">
@@ -18,14 +17,11 @@
             </div>
         </header>
 
-        <!-- Zone principale avec le canvas -->
         <main class="main-content">
             <div class="canvas-container">
-                <!-- Canvas pour la carte du ciel (taille dynamique) -->
                 <canvas id="skyCanvas"></canvas>
             </div>
 
-            <!-- Informations et contrôles -->
             <div class="info-panel">
                 <div class="stats">
                     <p><strong>Étoiles visibles :</strong> <span id="starCount">Chargement...</span></p>
@@ -47,7 +43,6 @@
             </div>
         </main>
 
-        <!-- Message de chargement / erreur -->
         <div id="loadingOverlay" class="loading-overlay">
             <div class="loading-content">
                 <div class="spinner"></div>
@@ -56,11 +51,14 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="../shared/astronomy.js"></script>
-    <script src="../shared/constellations.js"></script>
+    <script src="../../shared/astronomy.js"></script>
+    <script src="../../shared/constellations.js"></script>
+    <script src="../../core/data-loader.js"></script>
+    <script src="../../core/ui-utils.js"></script>
     <script src="canvas-controller.js"></script>
+    <script src="../telescope-view.js"></script>
     <script src="app.js"></script>
-    <script src="../shared/easter-eggs.js"></script>
+    <script src="../../shared/easter-eggs.js"></script>
 </body>
 </html>
+

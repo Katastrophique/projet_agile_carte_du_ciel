@@ -18,15 +18,13 @@
     pointer-events: auto;
 }
 
-/* état refermé : miroir parfait */
 .side-panel-left.collapsed {
     transform: translateY(-50%) translateX(calc(-100% + 40px));
 }
 
-/* ===== BOUTON MIRROIR ===== */
 .toggle-left-btn {
     position: absolute;
-    right: 0;                     /* miroir du `left: 0` du droit */
+    right: 0;               
     top: 50%;
     transform: translateY(-50%);
     width: 40px;
@@ -34,9 +32,9 @@
 
     background: var(--overlay-bg);
     border: 1px solid var(--border-color);
-    border-left: none;            /* miroir du border-right:none */
+    border-left: none;          
 
-    border-top-right-radius: 8px; /* miroir du top-left */
+    border-top-right-radius: 8px; 
     border-bottom-right-radius: 8px;
 
     color: var(--accent-color);
@@ -48,10 +46,9 @@
 }
 
 .toggle-left-btn:hover {
-    background: rgba(74, 144, 217, 0.2); /* même hover */
+    background: rgba(74, 144, 217, 0.2);
 }
 
-/* icône animée (miroir) */
 .toggle-left-icon {
     transition: transform 0.3s;
 }
@@ -60,10 +57,9 @@
     transform: rotate(180deg);
 }
 
-/* ===== CONTENU MIRROIR ===== */
 .panel-content-left {
     padding: 20px;
-    padding-right: 50px; /* miroir du padding-left du droit */
+    padding-right: 50px;
 }
 
 .panel-content-left h3 {
@@ -129,3 +125,4 @@
         font-size: 0.75rem;
     }
 }
+
