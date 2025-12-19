@@ -102,15 +102,46 @@ function findStarAtPosition(x, y, projectedStars, threshold = 15) {
  * @param {number} x - Coordonnée X en pixels
  * @param {number} y - Coordonnée Y en pixels
  */
+/**
+ * Formate les coordonnées célestes (RA/Dec) pour l'affichage
+ * @param {number} ra - Ascension droite en degrés
+ * @param {number} dec - Déclinaison en degrés
+ * @returns {string} Coordonnées formatées
+ */
+function formatCelestialCoordinates(ra, dec) {
+    // Convertir RA de degrés en heures/minutes/secondes
+    const raHours = ra / 15; // 360° = 24h, donc 1h = 15°
+    const raH = Math.floor(raHours);
+    const raM = Math.floor((raHours - raH) * 60);
+    const raS = ((raHours - raH) * 60 - raM) * 60;
+    
+    // Formater la déclinaison en degrés/minutes/secondes
+    const decSign = dec >= 0 ? '+' : '-';
+    const decAbs = Math.abs(dec);
+    const decD = Math.floor(decAbs);
+    const decM = Math.floor((decAbs - decD) * 60);
+    const decS = ((decAbs - decD) * 60 - decM) * 60;
+    
+    return `RA ${raH}h${raM.toString().padStart(2, '0')}m${raS.toFixed(1).padStart(4, '0')}s | Dec ${decSign}${decD}°${decM.toString().padStart(2, '0')}'${decS.toFixed(0).padStart(2, '0')}"`;
+}
+
 function showStarPopup(star, x, y) {
     const popup = document.getElementById('starPopup');
     const nameEl = document.getElementById('popupStarName');
     const constellationEl = document.getElementById('popupConstellation');
+    const locationEl = document.getElementById('popupLocation');
     
     if (!popup || !nameEl || !constellationEl) return;
     
     nameEl.textContent = getStarDisplayName(star);
     constellationEl.textContent = getConstellationFullName(star.constellation);
+    
+    // Afficher les coordonnées célestes si disponibles
+    if (locationEl && star.ra !== undefined && star.dec !== undefined) {
+        locationEl.textContent = formatCelestialCoordinates(star.ra, star.dec);
+    } else if (locationEl) {
+        locationEl.textContent = 'Coordonnées non disponibles';
+    }
     
     const offsetX = 15;
     const offsetY = -10;
@@ -148,6 +179,7 @@ function hideStarPopup() {
 window.StarHover = {
     getStarDisplayName,
     getConstellationFullName,
+    formatCelestialCoordinates,
     findStarAtPosition,
     showStarPopup,
     hideStarPopup

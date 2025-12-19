@@ -428,6 +428,22 @@ html, body {
     font-size: 0.7rem;
 }
 
+.star-popup-location {
+    font-size: 0.8rem;
+    color: rgba(180, 180, 180, 0.9);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(74, 144, 217, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.star-popup-location::before {
+    content: '📍';
+    font-size: 0.7rem;
+}
+
 /* Responsive pour le popup */
 @media (max-width: 480px) {
     .star-popup-content {
