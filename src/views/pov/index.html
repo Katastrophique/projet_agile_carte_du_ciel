@@ -93,6 +93,14 @@
         <li class="filter-btn" data-filter="largest">50 étoiles les plus grosses</li>
         <li class="filter-btn" data-filter="constellation">Filtrer par constellation</li>
     </ul>
+    
+    <select id="constellationSelect" class="constellation-select">
+        <option value="">-- Choisir une constellation --</option>
+    </select>
+    
+    <button id="clearFilterBtn" class="clear-filter-btn" onclick="window.StarFilter && window.StarFilter.clearFilter()">
+        ✕ Réinitialiser le filtre
+    </button>
 </div>
 
                 <div class="panel-section">

@@ -22,6 +22,7 @@ async function initApp() {
     }
     
     povView = new POVView(canvas, APP_CONFIG);
+    window.povView = povView;
     await povView.init();
     
     if (typeof window.easterEggs !== 'undefined') {

@@ -489,15 +489,16 @@ class CanvasController {
      * @param {number} distanceFromCenter - Distance du centre en unités normalisées
      * @param {number} altitude - Altitude de l'étoile en degrés
      * @param {boolean} [hasConstellation=false] - Si l'étoile fait partie d'une constellation
-     * @param {boolean} [isHighlighted=false] - Si l'étoile est mise en évidence
+     * @param {boolean} [isHighlighted=false] - Si l'étoile est mise en évidence (survol)
+     * @param {boolean} [isFiltered=false] - Si l'étoile est mise en surbrillance par un filtre
      */
-    drawStar(x, y, size, color, magnitude, distanceFromCenter, altitude, hasConstellation = false, isHighlighted = false) {
+    drawStar(x, y, size, color, magnitude, distanceFromCenter, altitude, hasConstellation = false, isHighlighted = false, isFiltered = false) {
         const ctx = this.ctx;
         
         const perspectiveScale = 1 - (distanceFromCenter * 0.2);
         let adjustedSize = size * Math.max(0.5, perspectiveScale);
         
-        if (isHighlighted) {
+        if (isHighlighted || isFiltered) {
             adjustedSize *= 1.3;
         }
         
@@ -507,7 +508,7 @@ class CanvasController {
         }
         
         const baseOpacity = Math.max(0.3, Math.min(1, (6 - magnitude) / 6));
-        const opacity = isHighlighted ? 1 : baseOpacity * atmosphericDimming;
+        const opacity = (isHighlighted || isFiltered) ? 1 : baseOpacity * atmosphericDimming;
         
         if (isHighlighted) {
             const highlightGlowRadius = adjustedSize * 5;
@@ -520,6 +521,18 @@ class CanvasController {
             ctx.fillStyle = highlightGlow;
             ctx.beginPath();
             ctx.arc(x, y, highlightGlowRadius, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (isFiltered) {
+            const filterGlowRadius = adjustedSize * 4;
+            const filterGlow = ctx.createRadialGradient(x, y, 0, x, y, filterGlowRadius);
+            filterGlow.addColorStop(0, 'rgba(255, 80, 80, 0.5)');
+            filterGlow.addColorStop(0.3, 'rgba(255, 60, 60, 0.25)');
+            filterGlow.addColorStop(0.6, 'rgba(255, 50, 50, 0.1)');
+            filterGlow.addColorStop(1, 'rgba(255, 50, 50, 0)');
+            
+            ctx.fillStyle = filterGlow;
+            ctx.beginPath();
+            ctx.arc(x, y, filterGlowRadius, 0, Math.PI * 2);
             ctx.fill();
         } else if (size > 1.5 && magnitude < 3) {
             const glowRadius = adjustedSize * 4;
@@ -534,7 +547,7 @@ class CanvasController {
             ctx.fill();
         }
         
-        const starColor = isHighlighted ? '#FFD700' : color;
+        const starColor = isHighlighted ? '#FFD700' : (isFiltered ? '#FF6464' : color);
         
         ctx.beginPath();
         ctx.arc(x, y, adjustedSize, 0, Math.PI * 2);
@@ -555,6 +568,12 @@ class CanvasController {
         if (isHighlighted) {
             ctx.strokeStyle = 'rgba(255, 200, 100, 0.9)';
             ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, adjustedSize + 2, 0, Math.PI * 2);
+            ctx.stroke();
+        } else if (isFiltered) {
+            ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.arc(x, y, adjustedSize + 2, 0, Math.PI * 2);
             ctx.stroke();
