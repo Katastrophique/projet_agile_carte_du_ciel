@@ -167,8 +167,19 @@ function getStarColor(colorIndex) {
     return '#FFFEF0';
 }
 
+
+function setObserver(latitude, longitude, locationName = "") {
+    OBSERVER_CONFIG.latitude = latitude;
+    OBSERVER_CONFIG.longitude = longitude;
+    OBSERVER_CONFIG.locationName = locationName;
+
+    console.log("Observer mis à jour :", { latitude, longitude, locationName });
+}
+
+
 window.Astronomy = {
     OBSERVER_CONFIG,
+    setObserver,
     degreesToRadians,
     radiansToDegrees,
     normalizeAngle,

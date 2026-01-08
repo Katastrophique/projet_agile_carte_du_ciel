@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="../../shared/common.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../../ui/menu_filtre.css">
+    <link rel="stylesheet" href="../../ui/location_search.css">
+
 </head>
 <body>
     <canvas id="skyCanvas"></canvas>
-    
+
     <div class="ui-overlay">
         <header class="overlay-header">
             <div class="header-left">
@@ -21,11 +23,20 @@
                 <span id="datetime" class="datetime"></span>
             </div>
         </header>
-        
+
         <div class="direction-indicator">
             <span id="directionDisplay">→ Sud 30°</span>
         </div>
-        
+
+
+        <div class="location-search">
+            <input type="text"
+                   id="locationInput"
+                   placeholder="Changer de localisation..."
+                   autocomplete="off" />
+            <ul id="locationSuggestions"></ul>
+        </div>
+
         <footer class="overlay-footer">
             <div class="footer-stats">
                 <div class="stat-item">
@@ -46,8 +57,8 @@
                 </div>
             </div>
         </footer>
-        
-        
+
+
         <div id="sidePanel" class="side-panel collapsed">
             <button id="togglePanel" class="toggle-panel-btn" title="Afficher/Masquer le panneau">
                 <span class="toggle-icon">☰</span>
@@ -75,33 +86,33 @@
             </div>
         </div>
 
-          
+
         <div id="leftPanel" class="side-panel-left collapsed">
             <button id="toggleLeftPanel" class="toggle-left-btn" title="Afficher/Masquer le panneau">
                 <span class="toggle-left-icon">☰</span>
             </button>
-            <div class="panel-content-left"> 
+            <div class="panel-content-left">
                 <h3>Menu filtre</h3>
 
-               <div class="panel-section">
-    <h4>Filtres disponibles</h4>
+                <div class="panel-section">
+                    <h4>Filtres disponibles</h4>
 
-    <ul class="filter-list">
-        <li class="filter-btn" data-filter="nearby">50 étoiles les plus proches</li>
-        <li class="filter-btn" data-filter="brightest">50 étoiles les plus brillantes</li>
-        <li class="filter-btn" data-filter="hottest">50 étoiles les plus chaudes</li>
-        <li class="filter-btn" data-filter="largest">50 étoiles les plus grosses</li>
-        <li class="filter-btn" data-filter="constellation">Filtrer par constellation</li>
-    </ul>
-    
-    <select id="constellationSelect" class="constellation-select">
-        <option value="">-- Choisir une constellation --</option>
-    </select>
-    
-    <button id="clearFilterBtn" class="clear-filter-btn" onclick="window.StarFilter && window.StarFilter.clearFilter()">
-        ✕ Réinitialiser le filtre
-    </button>
-</div>
+                    <ul class="filter-list">
+                        <li class="filter-btn" data-filter="nearby">50 étoiles les plus proches</li>
+                        <li class="filter-btn" data-filter="brightest">50 étoiles les plus brillantes</li>
+                        <li class="filter-btn" data-filter="hottest">50 étoiles les plus chaudes</li>
+                        <li class="filter-btn" data-filter="largest">50 étoiles les plus grosses</li>
+                        <li class="filter-btn" data-filter="constellation">Filtrer par constellation</li>
+                    </ul>
+
+                    <select id="constellationSelect" class="constellation-select">
+                        <option value="">-- Choisir une constellation --</option>
+                    </select>
+
+                    <button id="clearFilterBtn" class="clear-filter-btn" onclick="window.StarFilter && window.StarFilter.clearFilter()">
+                        ✕ Réinitialiser le filtre
+                    </button>
+                </div>
 
                 <div class="panel-section">
                     <h4>Aide</h4>
@@ -113,7 +124,7 @@
 
 
 
-        </div>
+    </div>
     </div>
 
 
@@ -143,6 +154,8 @@
     <script src="app.js"></script>
     <script src="../../shared/easter-eggs.js"></script>
     <script src="../../ui/menu_filtre.js"></script>
+    <script src="../../ui/location_search.js"></script>
+
 </body>
 </html>
 
