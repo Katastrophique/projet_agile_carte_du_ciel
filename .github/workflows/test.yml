@@ -1,26 +1,22 @@
-name: Tests (branches non-main)
+- name: Lancer tous les tests avec window simulé
+  run: |
+    echo "🧪 Début des tests"
+    SUCCESS=0
+    FAIL=0
 
-on:
-  push:
-    branches-ignore:
-      - main
+    for test in tests/*.test.js; do
+      echo ""
+      echo "Running $test"
+      if node -r jsdom-global/register "$test"; then
+        echo "$test OK"
+        SUCCESS=$((SUCCESS+1))
+      else
+        echo "$test KO"
+        FAIL=$((FAIL+1))
+        exit 1
+      fi
+    done
 
-jobs:
-  run-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - run: npm install
-
-      - name: Lancer tous les tests avec window simul�
-        run: |
-          for test in tests/*.test.js; do
-            echo "Running $test"
-            node -r jsdom-global/register "$test"
-          done
+    echo ""
+    echo "Résumé : $SUCCESS tests réussis, $FAIL échec(s)"
+    echo "Tous les tests sont passés"
