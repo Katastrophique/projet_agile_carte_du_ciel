@@ -1,4 +1,4 @@
-name: Tests
+name: Tests (branches non-main)
 
 on:
   push:
@@ -10,17 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Lancer tous les tests *.test.js
+      - run: npm install
+
+      - name: Lancer tous les tests avec window simulé
         run: |
           for test in tests/*.test.js; do
             echo "Running $test"
-            node "$test"
+            node -r jsdom-global/register "$test"
           done
