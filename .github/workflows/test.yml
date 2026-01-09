@@ -6,23 +6,21 @@ on:
       - main
 
 jobs:
-  tests:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Récupération du code
+      - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Installer Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Installer les dépendances
+      - name: Lancer tous les tests *.test.js
         run: |
-          if [ -f package.json ]; then
-            npm install
-          fi
-
-      - name: Lancer les tests
-        run: node tests/test-runner.js
+          for test in tests/*.test.js; do
+            echo "Running $test"
+            node "$test"
+          done
