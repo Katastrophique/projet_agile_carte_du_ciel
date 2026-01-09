@@ -1,22 +1,48 @@
-- name: Lancer tous les tests avec window simulé
-  run: |
-    echo "Début des tests"
-    SUCCESS=0
-    FAIL=0
+name: Tests non-main
 
-    for test in tests/*.test.js; do
-      echo ""
-      echo "Running $test"
-      if node -r jsdom-global/register "$test"; then
-        echo "$test OK"
-        SUCCESS=$((SUCCESS+1))
-      else
-        echo "$test KO"
-        FAIL=$((FAIL+1))
-        exit 1
-      fi
-    done
+on:
+  push:
+    branches-ignore:
+      - main
 
-    echo ""
-    echo "Résumé : $SUCCESS tests réussis, $FAIL échec(s)"
-    echo "Tous les tests sont passés"
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with simulated window
+        run: |
+          echo "Start tests"
+          SUCCESS=0
+          FAIL=0
+
+          for test in tests/*.test.js; do
+            echo "Running $test"
+            if node -r jsdom-global/register "$test"; then
+              echo "$test OK"
+              SUCCESS=$((SUCCESS+1))
+            else
+              echo "$test FAILED"
+              FAIL=$((FAIL+1))
+              exit 1
+            fi
+          done
+
+          echo "Summary: $SUCCESS passed, $FAIL failed"
+
+          echo "Test results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Passed tests: $SUCCESS" >> $GITHUB_STEP_SUMMARY
+          echo "Failed tests: $FAIL" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: Node.js with simulated window (jsdom)" >> $GITHUB_STEP_SUMMARY
