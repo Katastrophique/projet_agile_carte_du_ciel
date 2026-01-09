@@ -15,10 +15,12 @@ class POVView {
         this.config = config;
         this.allStars = [];
         this.visibleStars = [];
+        this.visiblePlanets = [];
         this.constellations = [];   
         this.canvasController = null;
         this.currentDate = null;
         this.projectedStars = [];
+        this.projectedPlanets = [];
         this.highlightedConstellation = null;
         this.filteredStarIds = new Set();
     }
@@ -68,7 +70,25 @@ class POVView {
 
         this.visibleStars.sort((a, b) => b.mag - a.mag);
 
+        this.updateVisiblePlanets();
+
         UIUtils.updateStarCount(this.visibleStars.length);
+    }
+
+    /**
+     * Met à jour les planètes visibles selon la date et la position actuelles
+     */
+    updateVisiblePlanets() {
+        if (typeof Planets !== 'undefined') {
+            const observer = Astronomy.OBSERVER_CONFIG;
+            this.visiblePlanets = Planets.calculateVisiblePlanets(
+                this.currentDate,
+                observer.latitude,
+                observer.longitude
+            );
+        } else {
+            this.visiblePlanets = [];
+        }
     }
     /**
      // * Met à jour la position de l'observateur et recalcule la carte
@@ -159,7 +179,45 @@ class POVView {
             renderedCount++;
         }
 
+        this.renderPlanets();
+
         UIUtils.updateStarCount(this.visibleStars.length, renderedCount);
+    }
+
+    /**
+     * Rend les planètes visibles sur le canvas
+     */
+    renderPlanets() {
+        if (!this.visiblePlanets || this.visiblePlanets.length === 0) return;
+
+        const camera = this.canvasController.camera;
+        this.projectedPlanets = [];
+
+        for (const planet of this.visiblePlanets) {
+            const projection = camera.project(planet.azimut, planet.altitude);
+
+            if (!projection || !projection.visible) {
+                continue;
+            }
+
+            if (!this.canvasController.isPointVisible(projection.x, projection.y)) {
+                continue;
+            }
+
+            this.canvasController.drawPlanet(
+                projection.x,
+                projection.y,
+                planet,
+                projection.distanceFromCenter
+            );
+
+            this.projectedPlanets.push({
+                planet: planet,
+                x: projection.x,
+                y: projection.y,
+                size: planet.size
+            });
+        }
     }
 
     /**
