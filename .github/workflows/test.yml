@@ -1,6 +1,6 @@
 - name: Lancer tous les tests avec window simulé
   run: |
-    echo "🧪 Début des tests"
+    echo "Début des tests"
     SUCCESS=0
     FAIL=0
 
