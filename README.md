@@ -7,6 +7,8 @@
 **Commit** Les commits doivent être rédigés de manière intelligible et explicite
 **Démo**  une démo doit être validée par le PO avant de Merge sur la Main
 
+
+
 # 🌟 Carte du Ciel - Lyon
 
 Application web interactive de visualisation du ciel étoilé visible depuis Lyon, France.

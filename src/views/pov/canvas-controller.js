@@ -656,6 +656,116 @@ class CanvasController {
     }
     
     /**
+     * Dessine une planète sur le canvas
+     * @param {number} x - Coordonnée X
+     * @param {number} y - Coordonnée Y
+     * @param {Object} planet - Données de la planète
+     * @param {number} distanceFromCenter - Distance du centre en unités normalisées
+     */
+    drawPlanet(x, y, planet, distanceFromCenter) {
+        const ctx = this.ctx;
+        
+        const perspectiveScale = 1 - (distanceFromCenter * 0.15);
+        const baseSize = planet.size * Math.max(0.6, perspectiveScale);
+        const zoomFactor = Math.sqrt(this.camera.getZoomLevel());
+        const adjustedSize = baseSize * zoomFactor;
+        
+        const outerGlowRadius = adjustedSize * 3;
+        const outerGlow = ctx.createRadialGradient(x, y, 0, x, y, outerGlowRadius);
+        outerGlow.addColorStop(0, this.hexToRgba(planet.color, 0.4));
+        outerGlow.addColorStop(0.4, this.hexToRgba(planet.color, 0.15));
+        outerGlow.addColorStop(0.7, this.hexToRgba(planet.color, 0.05));
+        outerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.fillStyle = outerGlow;
+        ctx.beginPath();
+        ctx.arc(x, y, outerGlowRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(x, y, adjustedSize, 0, Math.PI * 2);
+        
+        const planetGradient = ctx.createRadialGradient(
+            x - adjustedSize * 0.3, 
+            y - adjustedSize * 0.3, 
+            0, 
+            x, y, adjustedSize
+        );
+        planetGradient.addColorStop(0, this.lightenColor(planet.color, 40));
+        planetGradient.addColorStop(0.5, planet.color);
+        planetGradient.addColorStop(1, this.darkenColor(planet.color, 30));
+        
+        ctx.fillStyle = planetGradient;
+        ctx.fill();
+        
+        ctx.strokeStyle = this.lightenColor(planet.color, 20);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        const symbolOffset = adjustedSize + 12;
+        ctx.font = `bold ${Math.max(12, adjustedSize)}px Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+        
+        ctx.fillStyle = planet.color;
+        ctx.fillText(planet.symbol, x, y - symbolOffset);
+        
+        ctx.font = `${Math.max(10, adjustedSize * 0.8)}px Arial, sans-serif`;
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.fillText(planet.name, x, y + symbolOffset - 4);
+        
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+    }
+    
+    /**
+     * Convertit une couleur hexadécimale en rgba
+     * @param {string} hex - Couleur en hexadécimal
+     * @param {number} alpha - Opacité
+     * @returns {string} Couleur rgba
+     */
+    hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    
+    /**
+     * Éclaircit une couleur
+     * @param {string} hex - Couleur en hexadécimal
+     * @param {number} amount - Quantité d'éclaircissement
+     * @returns {string} Couleur éclaircie
+     */
+    lightenColor(hex, amount) {
+        const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + amount);
+        const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + amount);
+        const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + amount);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+    
+    /**
+     * Assombrit une couleur
+     * @param {string} hex - Couleur en hexadécimal
+     * @param {number} amount - Quantité d'assombrissement
+     * @returns {string} Couleur assombrie
+     */
+    darkenColor(hex, amount) {
+        const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - amount);
+        const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - amount);
+        const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - amount);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    /**
      * Obtient l'état actuel du contrôleur
      * @returns {Object} État du contrôleur
      */
