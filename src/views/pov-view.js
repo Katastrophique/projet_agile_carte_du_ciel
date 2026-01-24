@@ -104,12 +104,12 @@ class POVView {
         this.updateVisibleStars();
         this.render();
 
-        // Mise à jour UI (optionnelle mais utile)
         const locationLabel = document.querySelector(".location");
         if (locationLabel && locationName) {
             locationLabel.textContent = locationName;
         }
     }
+
     /**
      * Rend la carte du ciel
      */
@@ -256,6 +256,35 @@ class POVView {
     clearFilteredStars() {
         this.filteredStarIds = new Set();
         this.render();
+    }
+
+    /**
+     * Définit une nouvelle date pour la simulation du ciel
+     * @param {Date} date - La date à utiliser pour le calcul des positions
+     */
+    setDate(date) {
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
+            console.error('Date invalide fournie à setDate');
+            return;
+        }
+
+        this.currentDate = date;
+
+        UIUtils.updateDateTimeDisplay(this.currentDate);
+        this.visibleStars = Astronomy.calculateVisibleStars(this.allStars, this.currentDate);
+        this.constellations = Constellations.prepareConstellationsForRendering(this.visibleStars);
+        this.visibleStars.sort((a, b) => b.mag - a.mag);
+        this.updateVisiblePlanets();
+        UIUtils.updateStarCount(this.visibleStars.length);
+        this.render();
+    }
+
+    /**
+     * Retourne la date courante utilisée pour la simulation
+     * @returns {Date}
+     */
+    getCurrentDate() {
+        return this.currentDate;
     }
 
     /**
